@@ -32,4 +32,7 @@ document.getElementById("formLogin").addEventListener("submit", function (e) {
         alert("Đăng nhập thành công!");
         window.location.href = "/Default/Index";
     }
+
+
+
 });
