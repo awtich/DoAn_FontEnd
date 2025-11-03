@@ -9,6 +9,9 @@ namespace DoAn_web.Controllers
     public class DefaultController : Controller
     {
         // GET: Default
+        //Con CHó kiệt
+
+
         public ActionResult Index()
         {
             return View();
