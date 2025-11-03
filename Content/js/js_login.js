@@ -30,10 +30,6 @@ document.getElementById("formLogin").addEventListener("submit", function (e) {
 
 
 
-
-
-
-
     if (valid) {
         alert("Đăng nhập thành công!");
         window.location.href = "/Default/Index";
