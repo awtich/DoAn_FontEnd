@@ -14,25 +14,28 @@ document.getElementById("formLogin").addEventListener("submit", function (e) {
     e.preventDefault();
     clearErrors();
 
-    let valid = true;
+    // Tài khoản đúng (hardcode)
+    const correctUser = "admin";
+    const correctPass = "12345678";
 
     const user = getValue("loginUsername");
-    if (user.length < 5) {
-        valid = false;
-        showError("loginUsername", "Tên đăng nhập phải ≥ 5 ký tự.");
-    }
-
     const pass = getValue("loginPassword");
-    if (pass.length < 8) {
+
+    let valid = true;
+
+    // Kiểm tra tồn tại tên đăng nhập
+    if (user !== correctUser) {
         valid = false;
-        showError("loginPassword", "Mật khẩu phải ≥ 8 ký tự.");
+        showError("loginUsername", "Tên đăng nhập không tồn tại!");
+    }
+    // Nếu tên đúng mới kiểm tra mật khẩu
+    else if (pass !== correctPass) {
+        valid = false;
+        showError("loginPassword", "Mật khẩu không chính xác!");
     }
 
     if (valid) {
         alert("Đăng nhập thành công!");
         window.location.href = "/Default/Index";
     }
-
-
-
 });
