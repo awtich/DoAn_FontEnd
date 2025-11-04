@@ -17,21 +17,26 @@
 
             <label>Ngày sinh:</label>
             <div class="birthday">
-                <select>
-                    <option>Ngày</option>
+                <select id="day">
+                    <option value="">Ngày</option>
                     <script>for (let i = 1; i <= 31; i++) document.write(`<option>${i}</option>`);</script>
                 </select>
-                <select>
-                    <option>Tháng</option>
+
+                <select id="month">
+                    <option value="">Tháng</option>
                     <script>for (let i = 1; i <= 12; i++) document.write(`<option>${i}</option>`);</script>
                 </select>
-                <select>
-                    <option>Năm</option>
+
+                <select id="year">
+                    <option value="">Năm</option>
                     <script>
-    const year = new Date().getFullYear();
-                        for (let i = year; i >= 1900; i--) document.write(`<option>${i}</option>`);</script>
+                        const year = new Date().getFullYear();
+                        for (let i = year; i >= 1900; i--) document.write(`<option>${i}</option>`);
+                    </script>
                 </select>
             </div>
+            <span class="error" id="birthday_error"></span>
+
             <label>E-mail:</label>
             <input type="email" id="email">
             <span class="error" id="email_error"></span>
