@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -45,9 +46,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -122,10 +130,54 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\Admin2026\Admin2026AreaRegistration.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\CategoriesController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\CustomersController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\OrdersController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\ProductsController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\UsersController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Customer.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CustomerMetadata.cs" />
+    <Compile Include="Models\MyStore2026Model.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyStore2026Model.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MyStore2026Model.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MyStore2026Model.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyStore2026Model.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Order.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\OrderDetail.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Product.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\WebController.cs" />
@@ -207,6 +259,7 @@
     <Content Include="Content\js\Js_Product.js" />
     <Content Include="Content\js\Js_SighUp.js" />
     <Content Include="Content\style_K\Style_Address.css" />
+    <Content Include="Content\style_K\Style_Admin.css" />
     <Content Include="Content\style_K\Style_Confirm.css" />
     <Content Include="Content\style_K\Style_DangKi.css" />
     <Content Include="Content\style_K\Style_DichVu.css" />
@@ -222,12 +275,57 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Models\MyStore2026Model.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MyStore2026Model.edmx</DependentUpon>
+      <LastGenOutput>MyStore2026Model.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\MyStore2026Model.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MyStore2026Model.edmx</DependentUpon>
+      <LastGenOutput>MyStore2026Model.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
     <Content Include="Scripts\bootstrap.esm.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <EntityDeploy Include="Models\MyStore2026Model.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MyStore2026Model.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\MyStore2026Model.edmx.diagram">
+      <DependentUpon>MyStore2026Model.edmx</DependentUpon>
+    </Content>
+    <Content Include="Areas\Admin2026\Views\web.config" />
+    <Content Include="Areas\Admin2026\Views\Categories\Create.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Categories\Delete.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Categories\Details.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Categories\Edit.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Categories\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Products\Create.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Products\Delete.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Products\Details.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Products\Edit.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Products\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Customers\Create.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Customers\Delete.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Customers\Details.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Customers\Edit.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Customers\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Users\Create.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Users\Delete.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Users\Details.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Users\Edit.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Users\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Orders\Create.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Orders\Delete.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Orders\Details.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Orders\Edit.cshtml" />
+    <Content Include="Areas\Admin2026\Views\Orders\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -291,7 +389,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="Areas\Admin2026\Data\" />
+    <Folder Include="Content\Images\Products\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -356,7 +455,10 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
   </Target>
+  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

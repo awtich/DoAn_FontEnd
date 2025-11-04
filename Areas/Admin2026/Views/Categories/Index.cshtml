@@ -1,0 +1,61 @@
+﻿@model IEnumerable<DoAn_web.Models.Category>
+
+@{
+    // 1. Đặt tiêu đề trang. Layout sẽ tự động bắt lấy và hiển thị
+    ViewBag.Title = "Quản lý Danh mục";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<p class="mb-4">
+    @Html.ActionLink(" Thêm danh mục mới", "Create", null, new { @class = "btn btn-primary" })
+    @* Thêm icon: new { @class = "btn btn-primary bi bi-plus-lg" } *@
+</p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <table class="table table-striped table-hover align-middle">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CategoryName)
+                    </th>
+                    <th class="text-end" style="width: 200px;">Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CategoryName)
+                        </td>
+
+                        <td class="text-end">
+                            @Html.ActionLink("Sửa", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-sm btn-warning" })
+                            @Html.ActionLink("Chi tiết", "Details", new { id = item.CategoryID }, new { @class = "btn btn-sm btn-info ms-1" })
+                            @Html.ActionLink("Xóa", "Delete", new { id = item.CategoryID }, new { @class = "btn btn-sm btn-danger ms-1" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+@*
+       ### 🎨 Giải thích các thay đổi
+
+    * **Xóa `<h2>Index</h2>`:** Layout `_LayoutAdmin.cshtml` của bạn đã tự động hiển thị `ViewBag.Title` ở thanh header trên cùng, nên thẻ này không cần thiết nữa.
+    * **Nút "Create":** Dòng `@Html.ActionLink` được thêm `new { @class = "btn btn-primary" }` để biến một link text nhàm chán thành một nút màu xanh nổi bật.
+    * **Thẻ `<div class="card shadow-sm">`:** Toàn bộ bảng được bọc trong một "thẻ" Bootstrap có đổ bóng nhẹ, tạo cảm giác "nổi" và tách biệt khỏi nền, rất hợp với layout admin.
+    * **Class của Bảng:**
+        * `table-striped`: Thêm sọc (màu xen kẽ) cho các hàng.
+        * `table-hover`: Highlight hàng khi bạn di chuột vào.
+        * `align-middle`: Căn giữa nội dung trong các ô theo chiều dọc.
+    * **Đầu bảng (`<thead class="table-dark">`):** Làm cho tiêu đề của bảng có nền tối, chữ trắng, trông chuyên nghiệp hơn.
+    * **Nút Hành động (Sửa/Xóa):** Các link "Edit", "Details", "Delete" đã được chuyển thành các nút nhỏ (`btn-sm`) với màu sắc (Vàng, Xanh, Đỏ) và được căn lề phải cho gọn gàng.
+        * `ms-1`: Thêm một chút khoảng cách bên trái (margin-start) cho các nút.
+*@
