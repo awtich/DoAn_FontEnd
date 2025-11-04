@@ -1,0 +1,109 @@
+﻿@model DoAn_web.Models.Order
+
+@{
+    // 1. Tiêu đề
+    ViewBag.Title = "Chỉnh sửa Đơn hàng";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">@ViewBag.Title (ID: @Model.OrderID)</h5>
+    </div>
+
+    <div class="card-body">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+            @Html.HiddenFor(model => model.OrderID)
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.CustomerID, "Khách hàng", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.HiddenFor(model => model.CustomerID)
+
+                    <p class="form-control-plaintext">@Model.Customer.CustomerName</p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.OrderDate, "Ngày đặt", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
+                    @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.TotalAmount, "Tổng tiền", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control", type = "number", step = "1000" } })
+                    @Html.ValidationMessageFor(model => model.TotalAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.PaymentStatus, "Trạng thái", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(model => model.PaymentStatus, new SelectList(
+                        new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Chờ xử lý", Value = "Chờ xử lý" },
+                            new SelectListItem { Text = "Đã thanh toán", Value = "Đã thanh toán" },
+                            new SelectListItem { Text = "Đã hủy", Value = "Đã hủy" }
+                        }, "Value", "Text"), "--- Chọn trạng thái ---", new { @class = "form-select" })
+
+                    @Html.ValidationMessageFor(model => model.PaymentStatus, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.AddressDelivery, "Địa chỉ giao", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(model => model.AddressDelivery, new { @class = "form-control", rows = 3 })
+                    @Html.ValidationMessageFor(model => model.AddressDelivery, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                    @Html.ActionLink("Quay về", "Index", null, new { @class = "btn btn-secondary ms-2" })
+                </div>
+            </div>
+        }
+
+    </div>
+</div> @*```
+
+---
+
+### 🔔 Nhắc nhở quan trọng về Controller
+
+Để code trên hoạt động (cụ thể là dòng `@Model.Customer.CustomerName`), bạn **bắt buộc** phải cập nhật hàm `Edit [GET]` trong file `OrdersController.cs` để nó tải kèm (Include) thông tin của `Customer`:
+
+```csharp
+// GET: Admin2026/Orders/Edit/5
+public ActionResult Edit(int? id)
+{
+    if (id == null)
+    {
+        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+    }
+
+    // THÊM .Include(o => o.Customer) VÀO ĐÂY
+    Order order = db.Orders.Include(o => o.Customer).SingleOrDefault(o => o.OrderID == id);
+
+    if (order == null)
+    {
+        return HttpNotFound();
+    }
+
+    // (Không cần gửi ViewBag.CustomerID nữa vì chúng ta đã làm nó readonly)
+
+    return View(order);
+}*@

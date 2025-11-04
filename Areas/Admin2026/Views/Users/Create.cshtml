@@ -1,0 +1,60 @@
+﻿@model DoAn_web.Models.User
+
+@{
+    // 1. Tiêu đề
+    ViewBag.Title = "Tạo tài khoản mới";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">@ViewBag.Title</h5>
+    </div>
+
+    <div class="card-body">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.Username, "Tên đăng nhập", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.Password, "Mật khẩu", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+           
+
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <input type="submit" value="Tạo mới" class="btn btn-primary" />
+                    @Html.ActionLink("Quay về", "Index", null, new { @class = "btn btn-secondary ms-2" })
+                </div>
+            </div>
+        }
+
+    </div>
+</div> ```
+
+---
+
+@*### 🎨 Giải thích các thay đổi
+
+* **Layout (`<div class="card">
+    `):** Toàn bộ form được bọc trong `card` với `card-header` và `card-body` để đồng bộ.
+    * **Form ngang (Bootstrap 5):** Các class `form-horizontal`, `form-group` đã được thay bằng cấu trúc `row mb-3` mới.
+    * **Label (Nhãn):** Class `control-label col-md-2` được đổi thành `col-sm-2 col-form-label fw-bold` để căn chỉnh và in đậm nhãn.
+    * **Mật khẩu:** `@Html.EditorFor` đã được đổi thành `@Html.PasswordFor` để tự động tạo ra `<input type="password">`, giúp che mật khẩu khi người dùng gõ.
+    * **Nút bấm:** Link "Back to List" được chuyển lên nằm cạnh nút "Tạo mới" và được đổi thành `btn btn-secondary`.*@

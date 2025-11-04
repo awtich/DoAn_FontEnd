@@ -1,0 +1,89 @@
+﻿@model DoAn_web.Models.Customer
+
+@{
+    // 1. Tiêu đề
+    ViewBag.Title = "Chỉnh sửa Khách hàng";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">@ViewBag.Title: @Model.CustomerName</h5>
+    </div>
+
+    <div class="card-body">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+            @Html.HiddenFor(model => model.CustomerID)
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.CustomerName, "Tên khách hàng", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.CustomerPhone, "Số điện thoại", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.EditorFor(model => model.CustomerPhone, new { htmlAttributes = new { @class = "form-control", type = "tel" } })
+                    @Html.ValidationMessageFor(model => model.CustomerPhone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.CustomerEmail, "Email", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.EditorFor(model => model.CustomerEmail, new { htmlAttributes = new { @class = "form-control", type = "email" } })
+                    @Html.ValidationMessageFor(model => model.CustomerEmail, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.CustomerAddress, "Địa chỉ", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(model => model.CustomerAddress, new { @class = "form-control", rows = 3 })
+                    @Html.ValidationMessageFor(model => model.CustomerAddress, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                @Html.LabelFor(model => model.Username, "Tài khoản User", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
+                <div class="col-sm-10">
+                    @Html.DropDownList("Username", null, "--- Chọn tài khoản ---", htmlAttributes: new { @class = "form-select" })
+                    @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                    @Html.ActionLink("Quay về", "Index", null, new { @class = "btn btn-secondary ms-2" })
+                </div>
+            </div>
+        }
+
+    </div>
+</div> ```
+
+@*---
+
+### 🎨 Giải thích các thay đổi
+
+* **Layout (`<div class="card">
+    `):** Toàn bộ form được bọc trong `card` với `card-header` (có hiển thị tên khách hàng) và `card-body` để đồng bộ.
+    * **Form ngang (Bootstrap 5):** Các class `form-horizontal`, `form-group` đã được thay bằng cấu trúc `row mb-3` mới.
+    * **Label (Nhãn):** Class `control-label col-md-2` được đổi thành `col-sm-2 col-form-label fw-bold` để căn chỉnh và in đậm nhãn.
+    * **Cải tiến Input:**
+    * `CustomerPhone` được thêm `type = "tel"`.
+    * `CustomerEmail` được thêm `type = "email"`.
+    * `CustomerAddress` được đổi từ `EditorFor` sang `TextAreaFor` (ô nhập liệu nhiều dòng).
+    * **Dropdown:** `DropDownList` được đổi class từ `form-control` (cũ) thành `form-select` (mới của BS5).
+    * **Nút bấm:** Link "Back to List" được chuyển lên nằm cạnh nút "Lưu thay đổi" và được đổi thành `btn btn-secondary`.
+    * **`@Html.HiddenFor(model => model.CustomerID)`:** Trường này rất quan trọng và đã được giữ lại để form biết cần cập nhật `Customer` nào.*@
