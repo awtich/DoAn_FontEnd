@@ -28,6 +28,8 @@ document.getElementById("formLogin").addEventListener("submit", function (e) {
         showError("loginPassword", "Mật khẩu phải ≥ 8 ký tự.");
     }
 
+
+
     if (valid) {
         alert("Đăng nhập thành công!");
         window.location.href = "/Default/Index";
