@@ -34,6 +34,8 @@ document.getElementById("formLogin").addEventListener("submit", function (e) {
         showError("loginPassword", "Mật khẩu không chính xác!");
     }
 
+
+
     if (valid) {
         alert("Đăng nhập thành công!");
         window.location.href = "/Default/Index";
