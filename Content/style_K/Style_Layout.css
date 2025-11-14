@@ -9,24 +9,24 @@ body {
     width: 100%;
 }
 
+/* === PHẦN NAVBAR (Sửa lỗi co giãn) === */
 .navbar {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* Co giãn linh hoạt */
     align-items: center;
     background-color: #141924;
     color: white;
-    padding: 10px 40px;
+    padding: 10px 40px; /* Thêm padding 2 bên */
     position: relative;
-    flex-wrap: nowrap; /* THÊM: Chống vỡ/xuống dòng */
-    gap:250px;
+    flex-wrap: nowrap;
 }
 
-/* ben trai*/
+/* --- NAV-LEFT --- */
 .nav-left {
     display: flex;
     align-items: center;
     gap: 15px;
-    flex-shrink: 0; /* THÊM: Không co lại */
+    flex-shrink: 0;
 }
 
     .nav-left .logo {
@@ -37,14 +37,14 @@ body {
         height: 35px;
     }
 
-/* Giữa */
+/* --- NAV-CENTER (Sửa lỗi co giãn) --- */
 .nav-center {
-    /*flex: 1;*/ /* Sẽ tự co giãn */
-    width:450px;
+    flex-grow: 1; /* Cho phép co giãn */
+    max-width: 600px; /* Giới hạn độ rộng */
     display: flex;
     justify-content: center;
-    min-width: 150px; /* THÊM: Chống co quá nhỏ */
-    padding: 0 15px; /* THÊM: Khoảng đệm */
+    min-width: 150px;
+    padding: 0 15px; /* Thêm đệm 2 bên */
 }
 
 .search-box {
@@ -53,7 +53,7 @@ body {
     background-color: white;
     border-radius: 25px;
     padding: 8px 20px;
-    width: 100%; /* SỬA: từ 60% -> 100% */
+    width: 100%;
     max-width: 600px;
 }
 
@@ -70,46 +70,50 @@ body {
         font-size: 15px;
     }
 
-/* Phải */
+/* --- NAV-RIGHT (Sửa cho HTML mới) --- */
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 25px;
-    flex-shrink: 0; /* THÊM: Không co lại */
-    white-space: nowrap; /* THÊM: Không ngắt dòng chữ */
+    gap: 25px; /* Khoảng cách giữa các mục */
+    flex-shrink: 0;
+    white-space: nowrap;
+    justify-content: flex-end;
 }
 
-.nav-item {
+/* Đây là style cho cấu trúc mới (a bao bọc i và span) */
+.nav-item a {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 6px; /* Khoảng cách giữa icon và chữ */
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
 }
 
-    .nav-item a {
-        color: white;
+    .nav-item a:hover {
         text-decoration: none;
-        font-size: 15px;
+        color:yellow;
     }
 
-        .nav-item a:hover {
-            text-decoration: underline;
-        }
+/* (Class .nav-item-text dùng để giấu chữ trên mobile) */
 
-/* Nút menu mobile */
+
 .menu-toggle {
-    display: none; /* Mặc định ẨN */
+    display: none;
     font-size: 24px;
     cursor: pointer;
+    /* Thêm padding để dễ bấm hơn */
+    padding: 5px;
 }
 
-/* menu phu      */
+/* === SUBNAV (Giữ nguyên) === */
 .subnav {
     background-color: #141924;
     border-top: 1px solid #5a5a5a;
 }
 
     .subnav ul {
-        display: flex; /* Mặc định HIỆN */
+        display: flex;
         justify-content: center;
         list-style: none;
         margin: 0;
@@ -131,45 +135,12 @@ body {
         }
 
 
-/* ... */
-/* Footerrrrr    */
-.footer {
-    background-color: #131a22;
-    color: white;
-    padding: 40px 60px 20px;
-    font-size: 13px;
-    
+/* === FOOTER (Chung) === */
+.main-footer {
+    width: 100%;
 }
 
-.footer-top {
-    display: grid;
-    grid-template-columns: repeat(4, 350px);
-    gap: 20px;
-    margin-bottom: 30px;
-   text-align:center;
-   justify-content:center;
-   
-}
-   
-
-.footer-col {
-    margin-bottom: 18px;
-    line-height: 1.5;
-    border-bottom: 1px solid #3a4553;
-    padding-bottom: 15px;
-    text-align: center;
-}
-
-.footer-bottom {
-    text-align: center;
-    font-size: 12px; /* XÓA 1 DÒNG BỊ LẶP */
-    color: #aaa;
-    white-space: pre-line;
-    line-height: 1.6;
-
-}
-/* Thẻ thông tin trên footer      */
-.info-footer {
+.footer-info-section {
     display: flex;
     justify-content: center;
     align-items: stretch;
@@ -177,26 +148,25 @@ body {
     max-width: 1300px;
     padding: 0 20px;
     flex-wrap: wrap;
-    gap:5px;
+    gap: 5px;
 }
 
 .info-card {
     flex: 1 1 45%;
     background: #fff;
     border-radius: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     padding: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     min-width: 280px;
-    
 }
 
     .info-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
     .info-card h3 {
@@ -226,20 +196,54 @@ body {
             color: #0071e3;
         }
 
-/* --- RESPONSIVE DESIGN --- */
+.footer-dark-area {
+    background-color: #131a22;
+    color: white;
+    padding: 40px 60px 20px;
+    font-size: 13px;
+}
 
+/* === FOOTER (Sửa lỗi co giãn) === */
+.footer-top {
+    display: grid;
+    /* SỬA: từ 350px (cố định) sang 1fr (linh hoạt) */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    text-align: center;
+    justify-content: center;
+    background-color: #141924;
+}
+/* ================================== */
 
-/* 1. MÁY TÍNH BẢNG (Tablet) */
-@media (max-width: 1400px) {
+.footer-col {
+    color: white;
+    margin-bottom: 18px;
+    line-height: 1.5;
+    border-bottom: 1px solid #3a4553;
+    padding-bottom: 15px;
+    text-align: center;
+}
 
-    /* --- PHẦN HEADER (2 HÀNG) --- */
+.footer-bottom {
+    text-align: center;
+    font-size: 12px;
+    color: white;
+    white-space: pre-line;
+    line-height: 1.6;
+    background-color: #141924;
+}
+
+/* === PHẦN RESPONSIVE (ĐÃ SỬA HOÀN CHỈNH) === */
+
+/* 1. MÁY TÍNH BẢNG (Tablet) - 992px trở xuống */
+@media (max-width: 992px) {
+    /* --- HEADER (2 hàng) --- */
     .navbar {
-        flex-wrap: wrap; /* CHO PHÉP XUỐNG DÒNG */
-        gap: 10px; /* Khoảng cách giữa 2 hàng */
-        padding: 10px 20px; /* Padding nhỏ hơn */
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 20px;
     }
 
-    /* HÀNG 1: Logo (trái) và Icons (phải) */
     .nav-left {
         flex-grow: 1;
     }
@@ -247,161 +251,37 @@ body {
     .nav-right {
         flex-grow: 1;
         justify-content: flex-end;
-        /* XÓA BỎ gap: 20px; */
-    }
-
-        /* THÊM CÁI NÀY ĐỂ TẠO KHOẢNG CÁCH */
-        /* Áp dụng margin-left cho tất cả các con của .nav-right */
-        .nav-right > * {
-            margin-left: 20px;
-        }
-
-        .nav-right .nav-item a {
-            display: none;
-        }
-        /* Ẩn chữ */
-        .nav-right .flags {
-            display: none;
-        }
-
-    .nav-item {
-        gap: 0;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-    /* Hiện nút menu */
-
-    /* HÀNG 2: Thanh tìm kiếm */
-    .nav-center {
-        display: flex;
-        order: 3; /* Đẩy nó xuống cuối cùng */
-        width: 100%;
-        padding: 0;
-        min-width: unset;
-    }
-
-    .search-box {
-        width: 100%;
-    }
-
-    /* --- PHẦN MENU PHỤ (SUBNAV) --- */
-    .subnav ul {
-        display: none; /* Ẩn menu phụ */
-        flex-direction: column;
-        align-items: center;
-        background-color: #3a3a3a;
-        padding: 15px 0;
-    }
-
-    .subnav.active ul { /* Chỉ hiện khi click */
-        display: flex;
-        animation: fadeIn 0.3s ease;
-    }
-
-    .subnav a {
-        font-size: 16px;
-        padding: 10px 0;
-    }
-
-    /* --- PHẦN FOOTER & INFO --- */
-    .footer {
-        padding: 30px 30px 15px;
-    }
-
-    .info-footer {
         gap: 20px;
     }
+    /* Giảm gap 1 chút */
 
-    .info-card {
-        flex: 1 1 100%;
-        text-align: center;
-    }
-}
-
-/* 2. ĐIỆN THOẠI (Phone) - Tinh chỉnh thêm */
-/* Tinh chỉnh thêm cho màn hình nhỏ */
-@media (max-width: 768px) {
-
-    /* Layout 2 hàng đã được 1400px lo,
-       chỉ cần tinh chỉnh footer */
-
-    .footer {
-        font-size: 12px;
-        padding: 20px 15px;
+    /* SỬA: Giấu chữ, chừa icon (có thể bấm) */
+    .nav-item-text {
+        display: none;
     }
 
-    .footer-top {
-        grid-template-columns: 1fr; /* 1 cột trên ĐT */
+    .nav-item a {
+        gap: 0; /* Xóa khoảng cách khi chữ bị giấu */
+        font-size: 18px; /* Cho icon to hơn 1 chút */
+        padding: 5px; /* Tăng vùng bấm */
     }
 
-    .footer-col {
-        border: none;
-    }
-
-    .info-card {
-        padding: 25px;
-        font-size: 14px;
-    }
-
-        .info-card h3 {
-            font-size: 1.3rem;
-        }
-}
-/* 2. ĐIỆN THOẠI (Phone) - LAYOUT 2 HÀNG */
-@media (max-width: 768px) {
-
-    /* --- PHẦN HEADER --- */
-    .navbar {
-        flex-wrap: wrap; /* CHO PHÉP XUỐNG DÒNG */
-        gap: 10px; /* Khoảng cách giữa 2 hàng */
-    }
-
-    /* HÀNG 1: Logo (trái) và Icons (phải) */
-    .nav-left {
-        flex-grow: 1; /* Cho logo chiếm 1 phần */
-    }
-
-    .nav-right {
-        flex-grow: 1; /* Cho các icon chiếm 1 phần */
-        justify-content: flex-end; /* Đẩy các icon sang phải */
-        gap: 20px; /* Khoảng cách giữa các icon */
-    }
-
-        /* Ẩn chữ (giữ nguyên) */
-        .nav-right .nav-item a {
-            display: none;
-        }
-
-        .nav-right .flags {
-            display: none;
-        }
-
-    .nav-item {
-        gap: 0;
-    }
-
-    /* Hiện menu (giữ nguyên) */
     .menu-toggle {
         display: block;
     }
 
-    /* HÀNG 2: Thanh tìm kiếm */
     .nav-center {
-        display: flex; /* KHÔNG còn display: none */
-        order: 3; /* Đẩy nó xuống cuối cùng */
-        width: 100%; /* Cho nó chiếm 100% (tự xuống hàng 2) */
+        order: 3;
+        width: 100%;
         padding: 0;
         min-width: unset;
     }
 
     .search-box {
-        width: 100%; /* Search box chiếm 100% của hàng 2 */
+        width: 100%;
     }
 
-    /* --- PHẦN MENU PHỤ (SUBNAV) --- */
-    /* (Giữ nguyên như cũ) */
+    /* --- SUBNAV (Menu dọc) --- */
     .subnav ul {
         display: none;
         flex-direction: column;
@@ -420,14 +300,39 @@ body {
         padding: 10px 0;
     }
 
-    /* --- PHẦN FOOTER (Giữ nguyên) --- */
-    .footer {
+    /* --- FOOTER & INFO --- */
+    .footer-dark-area {
+        padding: 30px 30px 15px;
+    }
+
+    .footer-info-section {
+        gap: 20px;
+    }
+
+    .info-card {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    /* SỬA: Footer 2 cột trên tablet */
+    .footer-top {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* 2. ĐIỆN THOẠI (Phone) - 768px trở xuống */
+@media (max-width: 768px) {
+    /* Header và Subnav đã được 992px xử lý */
+
+    /* --- FOOTER (1 cột) --- */
+    .footer-dark-area {
         font-size: 12px;
         padding: 20px 15px;
     }
 
     .footer-top {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* 1 cột trên điện thoại */
     }
 
     .footer-col {
@@ -444,7 +349,7 @@ body {
         }
 }
 
-/* Hiệu ứng mở menu */
+/* Hiệu ứng mở menu (Giữ nguyên) */
 @keyframes fadeIn {
     from {
         opacity: 0;
