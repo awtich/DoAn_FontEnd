@@ -180,6 +180,7 @@
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="Views\WebController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +258,7 @@
     <Content Include="Content\js\js_login.js" />
     <Content Include="Content\js\Js_OrderHistory.js" />
     <Content Include="Content\js\Js_Product.js" />
+    <Content Include="Content\js\js_Search.js" />
     <Content Include="Content\js\Js_SighUp.js" />
     <Content Include="Content\style_K\Style_Address.css" />
     <Content Include="Content\style_K\Style_Admin.css" />
@@ -267,7 +269,9 @@
     <Content Include="Content\style_K\Style_Layout.css" />
     <Content Include="Content\style_K\Style_login.css" />
     <Content Include="Content\style_K\Style_OrderHistory.css" />
+    <Content Include="Content\style_K\Style_SearchList.css" />
     <Content Include="Content\style_K\Style_silder.css" />
+    <Content Include="Content\style_K\style_ThanhTimKiem.css" />
     <Content Include="Content\style_K\Style_ThanhToan.css" />
     <Content Include="Content\style_K\Style_TinTuc.css" />
     <Content Include="Content\style_K\Style_TrangCon.css" />
@@ -386,6 +390,10 @@
     <Content Include="Views\Default\Address.cshtml" />
     <Content Include="Views\Default\Confirm.cshtml" />
     <Content Include="Views\Default\OrderHistory.cshtml" />
+    <Content Include="Views\Shared\_SearchBoxPartial.cshtml" />
+    <Content Include="Views\Product\Details.cshtml" />
+    <Content Include="Views\Product\_LiveSearchResults.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

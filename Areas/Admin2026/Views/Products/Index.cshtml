@@ -7,9 +7,12 @@
 }
 
 <p class="mb-4">
+    @Html.Partial("_SearchBoxPartial") @*thanh tim kiiem*@
     @Html.ActionLink(" Thêm sản phẩm mới", "Create", null, new { @class = "btn btn-primary" })
-    @* Thêm icon: new { @class = "btn btn-primary bi bi-plus-lg" } *@
+
+
 </p>
+
 
 <div class="card shadow-sm">
     <div class="card-body">
@@ -88,14 +91,4 @@
     </div>
 </div> 
 
-@*---
 
-### 🎨 Giải thích các thay đổi
-
-* **`table-responsive`:** Bọc `table` trong `div` này sẽ tự động thêm thanh cuộn ngang (chỉ khi cần thiết, ví dụ trên điện thoại) nếu bảng quá rộng.
-* **Hiển thị Hình ảnh (`
-<img>`):** Thay vì chỉ in ra URL, code sẽ kiểm tra xem `ProductImage` có tồn tại không. Nếu có, nó sẽ render ra một thẻ `
-<img>` với kích thước được cố định (`75px x 75px`) để không làm vỡ layout.
-* **Rút gọn Mô tả (`text-truncate`):** Nếu mô tả quá dài, nó sẽ làm hỏng bảng. Class `text-truncate` của Bootstrap sẽ tự động cắt ngắn mô tả và thêm dấu "..." (ba chấm).
-* **Định dạng Giá tiền:** Tôi đã dùng `@item.ProductPrice.Value.ToString("N0")` để format số (ví dụ: `1000000` sẽ thành `1.000.000`) và thêm chữ "đ" ở cuối.
-* **`align-middle`:** Giúp nội dung trong các hàng (bao gồm cả ảnh) được căn giữa theo chiều dọc.*@

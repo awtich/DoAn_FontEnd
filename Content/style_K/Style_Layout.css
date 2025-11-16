@@ -38,36 +38,81 @@ body {
     }
 
 /* --- NAV-CENTER (Sửa lỗi co giãn) --- */
+/* =================================== */
+/* CSS cho Thanh Tìm Kiếm (Của bạn) */
+/* =================================== */
+
 .nav-center {
-    flex-grow: 1; /* Cho phép co giãn */
-    max-width: 600px; /* Giới hạn độ rộng */
-    display: flex;
-    justify-content: center;
-    min-width: 150px;
-    padding: 0 15px; /* Thêm đệm 2 bên */
+flex-grow: 1; /* Cho phép co giãn */
+max-width: 600px; /* Giới hạn độ rộng */
+ display: flex;
+ justify-content: center;
+  min-width: 150px;
+ padding: 0 15px; /* Thêm đệm 2 bên */
 }
 
 .search-box {
-    display: flex;
-    align-items: center;
+    
+    position: relative;
+display: flex;
+  align-items: center;
     background-color: white;
-    border-radius: 25px;
+     border-radius: 25px;
     padding: 8px 20px;
     width: 100%;
     max-width: 600px;
 }
 
     .search-box i {
-        color: gray;
-        font-size: 18px;
-        margin-right: 10px;
+         color: gray;
+         font-size: 18px;
+       margin-right: 10px;
     }
 
     .search-box input {
         border: none;
-        outline: none;
+      outline: none;
         width: 100%;
-        font-size: 15px;
+         font-size: 15px;
+    }
+
+
+
+/* Hộp (div) rỗng chứa kết quả */
+#search-results {
+    display: none; /* 1. Mặc định ẩn */
+    position: absolute; /* 2. "Bay" (nổi) lên */
+    /* 3. Vị trí: Ngay dưới ô tìm kiếm (100%) */
+    top: 100%;
+    left: 0;
+    right: 0;
+    /* 4. Hình thức (Làm đẹp) */
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 0 0 8px 8px; /* Bo góc dưới */
+    z-index: 1000; /* Nổi lên trên mọi thứ khác */
+    max-height: 400px; /* Giới hạn chiều cao nếu kết quả quá dài */
+    overflow-y: auto; /* Tự động thêm thanh cuộn */
+}
+
+/* Từng dòng kết quả (thẻ <a>) */
+.search-result-item {
+    display: block; /* Hiển thị dạng khối (mỗi cái 1 dòng) */
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+    /* Hiệu ứng khi di chuột vào 1 dòng */
+    .search-result-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    /* Bỏ viền của dòng cuối cùng */
+    .search-result-item:last-child {
+        border-bottom: none;
     }
 
 /* --- NAV-RIGHT (Sửa cho HTML mới) --- */

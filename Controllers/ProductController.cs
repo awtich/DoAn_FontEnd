@@ -1,15 +1,77 @@
-﻿using System;
+﻿using DoAn_web.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
+
+
 
 namespace DoAn_web.Controllers
 {
     public class ProductController : Controller
     {
+        private MyStore2026Entities db = new MyStore2026Entities();
         // GET: Product
+        public ActionResult Index(string searchString)
+        {
+            // Tạo truy vấn lấy tất cả sản phẩm
+            var products = from p in db.Products
+                           select p;
+            // Nếu có chuỗi tìm kiếm, lọc sản phẩm
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                string searchUpper = searchString.ToUpper();
+                products = products.Where(p => p.ProductName.ToUpper().Contains(searchUpper) ||
+                                               p.ProductDecription.ToUpper().Contains(searchUpper));
+
+            }
+            // Truyền chuỗi tìm kiếm hiện tại về View để hiển thị lại trong ô tìm kiếm
+            ViewBag.CurrentFilter = searchString;
+            return View(products.ToList());
+        }
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+           // dung id de tim sp trong database
+            Product product = db.Products.Find(id);
+
+            // neu ko tim thay thi bao loi
+            if (product == null) 
+                return HttpNotFound();
+
+            return View(product);
+
+        }
+        public ActionResult LiveSearch( string searchString)
+        {
+            if (string.IsNullOrEmpty(searchString))
+                return new EmptyResult(); // tra ve cchuoi rong neu khong co du lieu
+
+            var products = db.Products
+                              .Where(p => p.ProductName.ToUpper().Contains(searchString.ToUpper()))
+                              .Take(5)
+                              .ToList();
+            return PartialView("_LiveSearchResults", products);                    
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public ActionResult Iphon17()
         {
             return View();
@@ -42,5 +104,6 @@ namespace DoAn_web.Controllers
         {
             return View();
         }
+        
     }
 }

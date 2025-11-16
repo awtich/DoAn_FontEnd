@@ -16,9 +16,18 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         private MyStore2026Entities db = new MyStore2026Entities();
 
         // GET: Admin2026/Products
-        public ActionResult Index()
+        public ActionResult Index( string searchString)
         {
-            var products = db.Products.Include(p => p.Category);
+           var products = db.Products.Include(p => p.Category);
+            // Nếu có chuỗi tìm kiếm, lọc sản phẩm
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                string searchUpper = searchString.ToUpper();
+                products = products.Where(p => p.ProductName.ToUpper().Contains(searchUpper) ||
+                                               p.ProductDecription.ToUpper().Contains(searchUpper));
+            }
+            // Truyền chuỗi tìm kiếm hiện tại về View để hiển thị lại trong ô tìm kiếm
+            ViewBag.CurrentFilter = searchString;
             return View(products.ToList());
         }
 

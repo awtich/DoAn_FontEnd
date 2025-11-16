@@ -16,12 +16,30 @@
         </div>
 
         <div class="nav-center">
-            
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Bạn tìm gì..." />
+            <div class="search-box" style="position:relative">
+                @using (Html.BeginForm("Index", "Product", FormMethod.Get))
+                {
+                    <div style="display:flex; width:100%; align-items:center;">
+                        <i class="fas fa-search"></i>
+                        @Html.TextBox("searchString", null, new
+                        {
+                        @id = "live-search-box",
+                        @placeholder = "Bạn tìm gì...",
+                        @style = "border:none; outline:none; flex-grow:1; margin-left: 10px;",
+                        autocomplete = "off"
+                        })
+                        <input type="submit" value="" style="display:none;" />
+                    </div>
+                }
+                <div id="search-results">
+                    @*   hoi js se do het html vao day  *@
+                </div>
             </div>
+
+
+
         </div>
+
 
         <div class="nav-right">
             <div class="nav-item">
@@ -68,9 +86,9 @@
     </nav>
 
     <script>
-     document.getElementById("menu-toggle").addEventListener("click", function () {
-         document.getElementById("subnav").classList.toggle("active");
-     });
+        document.getElementById("menu-toggle").addEventListener("click", function () {
+            document.getElementById("subnav").classList.toggle("active");
+        });
     </script>
 
     <div>
@@ -104,7 +122,7 @@
             <a href="#"><img src="~/Content/img/2.jpeg" style="display:block; margin: 0 auto;padding-bottom:10px;width:70%" /></a>
         </div>
 
-        <div class="footer-top"   >
+        <div class="footer-top">
             <div class="footer-col">
                 <i class="fab fa-app-store fa-lg" style=" font-size:65px; padding-top:25px;padding-bottom:10px"></i>
                 <p>Năm 2020, Shop trở thành đại lý ủy quyền của Apple. Chúng tôi phát triển chuỗi cửa hàng tiêu chuẩn và Apple Mono Store nhằm mang đến trải nghiệm tốt nhất về sản phẩm và dịch vụ của Apple cho người dùng Việt Nam</p>
@@ -135,7 +153,7 @@
             </div>
         </div>
 
-        <div class="footer-bottom" >
+        <div class="footer-bottom">
             <p>
                 © 2016 Công ty Cổ Phần Awtich Việt Nam GPDKKD: 0824279756 do Sở KH & ĐT cali cấp ngày 08/06/2052.
                 Địa chỉ: 407/30,Su Van Hang,P12,Q10,TPHCM
@@ -144,6 +162,10 @@
         </div>
 
     </footer>
-    <script src="~/Content/js/Js_Cart.js"></script>
+   
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script> @* Đảm bảo bạn đã có jQuery *@
+
+   
+
 </body>
 </html>

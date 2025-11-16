@@ -1,0 +1,42 @@
+﻿@model DoAn_web.Models.Product
+@{
+    ViewBag.Title = Model.ProductName;
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<link href="~/Content/style_K/Style_TrangCuThe.css" rel="stylesheet" />
+
+@*HTML ĐÃ ĐỔI TÊN CLASS *@
+
+<div class="product-detail-container">
+
+  
+    <div class="detail-row">
+
+      
+        <div class="detail-column-left">
+            <img src="@Url.Content(Model.ProductImage)" alt="@Model.ProductName" class="product-detail-image" />
+        </div>
+
+      
+        <div class="detail-column-right">
+
+            <h2 class="product-detail-name">@Model.ProductName</h2>
+
+            <p class="product-detail-price">@String.Format("{0:N0}", Model.ProductPrice) đ</p>
+
+            <hr />
+
+            <div class="product-detail-description">
+                <p>@Model.ProductDecription</p>
+            </div>
+
+            <hr />
+
+            <a href="#" class="add-to-cart-btn">
+                Thêm vào giỏ hàng
+            </a>
+
+        </div>
+    </div>
+</div>
