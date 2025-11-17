@@ -56,14 +56,8 @@ namespace DoAn_web.Controllers
 
 
         }
-        public ActionResult Cart()
-        {
-            return View();
-        }
-        public ActionResult UserLogin()
-        {
-            return View();
-        }
+       
+        
 
         public ActionResult TrangIphone()
         {
@@ -78,6 +72,39 @@ namespace DoAn_web.Controllers
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(iphones);
         }
+        private int GetCurrentCustomerID()
+        {
+            var username = User.Identity.Name;
+            // Thay tên DbContext bằng tên của bạn
+            using (var db = new MyStore2026Entities())
+            {
+                var customer = db.Customers.FirstOrDefault(c => c.Username == username);
+                return customer.CustomerID;
+            }
+        }
+
+        // GET: /Default/OrderHistory
+        [Authorize(Roles = "C")] // Chỉ Customer mới xem được
+        public ActionResult OrderHistory()
+        {
+            int customerID = GetCurrentCustomerID();
+
+            // Lấy tất cả đơn hàng của Customer này
+            // Sắp xếp đơn mới nhất lên đầu
+            var orders = db.Orders
+                           .Where(o => o.CustomerID == customerID)
+                           .Include("OrderDetails.Product") // Lấy luôn chi tiết và sản phẩm
+                           .OrderByDescending(o => o.OrderDate)
+                           .ToList();
+
+            return View(orders);
+        }
+        
+
+
+
+
+
         public ActionResult TrangMac()
         {
             return View();
@@ -142,9 +169,6 @@ namespace DoAn_web.Controllers
         {
             return View();
         }
-        public ActionResult OrderHistory()
-        {
-            return View();
-        }
+        
     }
 }

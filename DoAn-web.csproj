@@ -137,11 +137,14 @@
     <Compile Include="Areas\Admin2026\Controllers\OrdersController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\ProductsController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\UsersController.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Category.cs">
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
@@ -181,6 +184,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
+    <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="Views\WebController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -262,9 +266,11 @@
     <Content Include="Content\js\Js_SighUp.js" />
     <Content Include="Content\style_K\Style_Address.css" />
     <Content Include="Content\style_K\Style_Admin.css" />
+    <Content Include="Content\style_K\Style_Checkout.css" />
     <Content Include="Content\style_K\Style_Confirm.css" />
     <Content Include="Content\style_K\Style_DangKi.css" />
     <Content Include="Content\style_K\Style_DichVu.css" />
+    <Content Include="Content\style_K\Style_GioHang.css" />
     <Content Include="Content\style_K\Style_home.css" />
     <Content Include="Content\style_K\Style_Layout.css" />
     <Content Include="Content\style_K\Style_login.css" />
@@ -377,7 +383,6 @@
     <Content Include="Views\Default\TrangMussic.cshtml" />
     <Content Include="Views\Default\TrangCamera.cshtml" />
     <Content Include="Views\Default\TrangAccessory.cshtml" />
-    <Content Include="Views\Default\Cart.cshtml" />
     <Content Include="Views\Default\UserLogin.cshtml" />
     <Content Include="Views\Default\PhuKien.cshtml" />
     <Content Include="Views\Default\AmThanh.cshtml" />
@@ -394,6 +399,10 @@
     <Content Include="Views\Product\Details.cshtml" />
     <Content Include="Views\Product\_LiveSearchResults.cshtml" />
     <Content Include="Views\Product\Index.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\Cart\Checkout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

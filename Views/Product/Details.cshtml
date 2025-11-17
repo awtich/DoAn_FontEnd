@@ -33,9 +33,20 @@
 
             <hr />
 
-            <a href="#" class="add-to-cart-btn">
-                Thêm vào giỏ hàng
-            </a>
+            @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+            {
+                @* Gửi ID sản phẩm đi *@
+                @Html.Hidden("productID", Model.ProductID)
+
+                <div class.form-inline">
+                    <label style="margin-right: 10px;">Số lượng:</label>
+                    <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px;" />
+
+                    <button type="submit" class="btn btn-primary btn-lg add-to-cart-btn" style="margin-left: 15px;">
+                        Thêm vào giỏ hàng
+                    </button>
+                </div>
+            }
 
         </div>
     </div>

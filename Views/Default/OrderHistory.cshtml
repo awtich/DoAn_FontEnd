@@ -1,62 +1,56 @@
-﻿
+﻿@model List<DoAn_web.Models.Order>
 @{
-    ViewBag.Title = "OrderHistory";
+    ViewBag.Title = "Lịch sử mua hàng";
     Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
+@* 1. Tải file CSS (đảm bảo tên file đúng) *@
 <link href="~/Content/style_K/Style_OrderHistory.css" rel="stylesheet" />
-<div class="container-order">
+
+@* 2. Thay "container" bằng "history-container" và bỏ style inline *@
+<div class="history-container">
     <h2>Lịch sử mua hàng</h2>
+    <hr />
 
-    <table class="order-table">
-        <thead>
-            <tr>
-                <th>Mã đơn</th>
-                <th>Ngày mua</th>
-                <th>Sản phẩm</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-            </tr>
-        </thead>
-        <tbody id="orderBody">
-            <tr>
-                <td>DH001</td>
-                <td>2025-10-28</td>
-                <td>iPhone 17 Pro</td>
-                <td>37.000.000₫</td>
-                <td class="status processing">Đang xử lý</td>
-            </tr>
-        </tbody>
-        <tbody id="orderBody">
-            <tr>
-                <td>DH003</td>
-                <td>2025-12-28</td>
-                <td>iPhone 17 Pro Max</td>
-                <td>45.000.000₫</td>
-                <td class="status processing">Đã Giao</td>
-            </tr>
-        </tbody>
-        <tbody id="orderBody">
-            <tr>
-                <td>DH004</td>
-                <td>2025-12-28</td>
-                <td>iPhone 17 Pro Max</td>
-                <td>45.000.000₫</td>
-                <td class="status processing">Đã Giao</td>
-            </tr>
-        </tbody>
-        <tbody id="orderBody">
-            <tr>
-                <td>DH005</td>
-                <td>2025-12-25</td>
-                <td>iPhone 17 Pro Air</td>
-                <td>45.000.000₫</td>
-                <td class="status processing">Đã Giao</td>
-            </tr>
-        </tbody>
-    </table>
+    @if (!Model.Any())
+    {
+        <p>Bạn chưa có đơn hàng nào.</p>
+    }
+    else
+    {
+        foreach (var order in Model)
+        {
+            @* 3. Thay "panel" bằng "order-card" *@
+            <div class="order-card">
 
-    
+                @* 4. Thay "panel-heading" bằng "order-card-header" *@
+                <div class="order-card-header">
+                    @* 5. Tách <h4> thành 2 phần (thay cho pull-right) *@
+                    <span class="order-id">Đơn hàng #@order.OrderID</span>
+                    <span class="order-total-price">Tổng tiền: @String.Format("{0:N0}", order.TotalAmount) đ</span>
+                </div>
+
+                @* 6. Thay "panel-body" bằng "order-card-body" *@
+                <div class="order-card-body">
+                    <p><strong>Ngày đặt:</strong> @order.OrderDate.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Giao đến:</strong> @order.AddressDelivery</p>
+                    <p><strong>Trạng thái:</strong> @order.PaymentStatus</p>
+
+                    <h5>Chi tiết sản phẩm:</h5>
+
+                    @* 7. Thay "table" bằng "order-detail-table" *@
+                    <table class="order-detail-table">
+                        @foreach (var detail in order.OrderDetails)
+                        {
+                            <tr>
+                                <td>@detail.Product.ProductName</td>
+                                <td>Số lượng: @detail.Quantity</td>
+                                <td>@String.Format("{0:N0}", detail.UnitPrice) đ</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        }
+    }
 </div>
-<script src="~/Content/js/Js_OrderHistory.js"></script>
-

@@ -1,0 +1,70 @@
+﻿@* File: /Views/Cart/Checkout.cshtml *@
+
+@{
+    ViewBag.Title = "Xác nhận Thanh toán";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml"; // Dùng layout của bạn
+
+    // Lấy dữ liệu từ ViewBag (đã được gửi từ CartController)
+    var cart = ViewBag.Cart as List<DoAn_web.Models.CartItem>;
+    var customer = ViewBag.Customer as DoAn_web.Models.Customer;
+    decimal totalAmount = cart.Sum(item => item.TotalPrice);
+}
+
+<link href="~/Content/style_K/Style_Checkout.css" rel="stylesheet" />
+
+<div class="checkout-container">
+    <h2>Xác nhận Đơn hàng</h2>
+    <hr />
+    <div class="checkout-row">
+
+        @* --- CỘT BÊN TRÁI (TÓM TẮT ĐƠN HÀNG) --- *@
+        <div class="checkout-col-summary">
+            <h4>Sản phẩm trong giỏ:</h4>
+
+            @foreach (var item in cart)
+            {
+                <div class="checkout-item">
+                    <span>@item.ProductName (x @item.Quantity)</span>
+                    <strong>@String.Format("{0:N0}", item.TotalPrice) đ</strong>
+                </div>
+            }
+
+            <div class="checkout-total">
+                Tổng cộng: @String.Format("{0:N0}", totalAmount) đ
+            </div>
+        </div>
+
+        @* --- CỘT BÊN PHẢI (THÔNG TIN GIAO HÀNG) --- *@
+        <div class="checkout-col-address">
+            <h4>Thông tin giao hàng:</h4>
+
+            @* Hiển thị thông tin Customer (lấy từ ViewBag) *@
+            <p><strong>Khách hàng:</strong> @customer.CustomerName</p>
+            <p><strong>Điện thoại:</strong> @customer.CustomerPhone</p>
+            <p><strong>Email:</strong> @customer.CustomerEmail</p>
+
+            <hr />
+
+            @* Form này sẽ gửi đến Action "PlaceOrder" (Bước 4) *@
+            @using (Html.BeginForm("PlaceOrder", "Cart", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    <label class="custom-label">Địa chỉ giao hàng:</label>
+                    @* Cho phép người dùng sửa địa chỉ (tự điền địa chỉ cũ) *@
+                    <input type="text" name="AddressDelivery" class="custom-input" value="@customer.CustomerAddress" required />
+                </div>
+
+                @* Gửi tổng số tiền đi (ẩn) *@
+                <input type="hidden" name="TotalAmount" value="@totalAmount" />
+
+                <div class="form-row" style="margin-top: 20px;">
+                    <button type="submit" class="custom-button button-success" style="width: 100%;">
+                        XÁC NHẬN ĐẶT HÀNG
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

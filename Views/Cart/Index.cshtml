@@ -1,0 +1,60 @@
+﻿@* File: /Views/Cart/Index.cshtml *@
+@model List<DoAn_web.Models.CartItem>
+
+@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml"; // Đảm bảo dùng đúng Layout
+}
+
+<link href="~/Content/style_K/Style_GioHang.css" rel="stylesheet" />
+
+<div class="cart-container">
+    <h2>Giỏ hàng của bạn</h2>
+    <hr />
+
+    @* Kiểm tra xem giỏ hàng có rỗng không (từ ViewBag) *@
+    @if (ViewBag.CartMessage != null)
+    {
+        <div style="padding: 20px; background-color: #f0f0f0; text-align: center;">@ViewBag.CartMessage</div>
+    }
+    else
+    {
+        decimal totalAmount = 0;
+
+        @* Lặp qua từng item trong Model (giỏ hàng) *@
+        foreach (var item in Model)
+        {
+            if (item != null) // Kiểm tra an toàn, tránh lỗi item bị null
+            {
+                totalAmount += item.TotalPrice;
+                <div class="cart-item">
+                    <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" />
+                    <div class="cart-item-info">
+                        <h4>@item.ProductName</h4>
+                        <p>Số lượng: @item.Quantity</p>
+                        <p>Đơn giá: @String.Format("{0:N0}", item.UnitPrice) đ</p>
+                    </div>
+                    <div class="cart-item-price">
+                        <h5>@String.Format("{0:N0}", item.TotalPrice) đ</h5>
+                        @* Link "Xóa" gọi Action "RemoveFromCart" *@
+                        <a href="@Url.Action("RemoveFromCart", "Cart", new { productID = item.ProductID })"
+                           style="color: #d70018; text-decoration: none;">Xóa</a>
+                    </div>
+                </div>
+            }
+        }
+
+        @* Hiển thị tổng tiền *@
+        <div class="cart-total">
+            Tổng cộng: @String.Format("{0:N0}", totalAmount) đ
+        </div>
+
+        <div style="text-align: right; margin-top: 20px;">
+           
+            @* Nó sẽ gọi Action "Checkout" trong "CartController" *@
+            <a href="@Url.Action("Checkout", "Cart")" class="checkout-btn">
+                Tiến hành Thanh toán
+            </a>
+        </div>
+    }
+</div>
