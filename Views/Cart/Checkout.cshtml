@@ -4,7 +4,7 @@
     ViewBag.Title = "Xác nhận Thanh toán";
     Layout = "~/Views/Shared/_HomeLayout.cshtml"; // Dùng layout của bạn
 
-    // Lấy dữ liệu từ ViewBag (đã được gửi từ CartController)
+    // Lấy dữ liệu từ ViewBag
     var cart = ViewBag.Cart as List<DoAn_web.Models.CartItem>;
     var customer = ViewBag.Customer as DoAn_web.Models.Customer;
     decimal totalAmount = cart.Sum(item => item.TotalPrice);
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        @* --- CỘT BÊN PHẢI (THÔNG TIN GIAO HÀNG) --- *@
+        @* --- CỘT BÊN PHẢI (THÔNG TIN GIAO HÀNG & FORM) --- *@
         <div class="checkout-col-address">
             <h4>Thông tin giao hàng:</h4>
 
@@ -45,16 +45,33 @@
 
             <hr />
 
-            @* Form này sẽ gửi đến Action "PlaceOrder" (Bước 4) *@
+            @* Form này sẽ gửi đến Action "PlaceOrder" *@
             @using (Html.BeginForm("PlaceOrder", "Cart", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
 
+                @* 1. Ô ĐỊA CHỈ GIAO HÀNG (đã có) *@
                 <div class="form-row">
                     <label class="custom-label">Địa chỉ giao hàng:</label>
-                    @* Cho phép người dùng sửa địa chỉ (tự điền địa chỉ cũ) *@
                     <input type="text" name="AddressDelivery" class="custom-input" value="@customer.CustomerAddress" required />
                 </div>
+
+                @*  2. LỰA CHỌN PHƯƠNG THỨC THANH TOÁN *@
+                <hr />
+                <h4>Phương thức thanh toán:</h4>
+                <div class="form-row">
+                    <div class="payment-options">
+
+                        <input type="radio" name="PaymentMethod" value="Tiền mặt (COD)" id="pay_cod" checked required />
+                        <label for="pay_cod" style="font-weight: normal; margin-right: 15px;">Thanh toán khi nhận hàng (COD)</label>
+
+                        <br />
+
+                        <input type="radio" name="PaymentMethod" value="Chuyển khoản" id="pay_bank" required />
+                        <label for="pay_bank" style="font-weight: normal;">Chuyển khoản ngân hàng</label>
+                    </div>
+                </div>
+                <hr />
 
                 @* Gửi tổng số tiền đi (ẩn) *@
                 <input type="hidden" name="TotalAmount" value="@totalAmount" />

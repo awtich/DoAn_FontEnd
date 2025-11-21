@@ -4,50 +4,130 @@
     Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
-<link href="~/Content/style_K/Style_TrangCuThe.css" rel="stylesheet" />
+<style>
+    /* ---------------------------------------------------- */
+    /* CSS CHO LAYOUT RESPONSIVE (Sử dụng Flexbox) */
+    /* ---------------------------------------------------- */
+    .detail-flex-container {
+        display: flex;
+        flex-wrap: wrap; /* Cho phép các cột xuống hàng trên mobile */
+        gap: 30px; /* Khoảng cách giữa các cột */
+        padding: 30px 15px;
+        max-width: 1200px;
+        margin: auto;
+    }
 
-@*HTML ĐÃ ĐỔI TÊN CLASS *@
+    .column-left {
+        flex: 1 1 40%; /* Chiếm khoảng 40% trên desktop */
+        max-width: 450px; /* Giới hạn chiều rộng cho hình ảnh */
+    }
 
-<div class="product-detail-container">
+    .column-right {
+        flex: 1 1 55%; /* Chiếm khoảng 55% trên desktop */
+    }
 
-  
-    <div class="detail-row">
+    .product-image-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
 
-      
-        <div class="detail-column-left">
+    .product-detail-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 6px;
+    }
+
+    .product-name {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .product-price {
+        font-size: 28px;
+        color: #d9534f; /* Màu đỏ nổi bật */
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    /* Media Query: Khi màn hình nhỏ hơn 768px (Mobile) */
+    @@media (max-width: 768px) {
+        .column-left, .column-right {
+            flex-basis: 100%; /* Mỗi cột chiếm toàn bộ chiều rộng */
+            max-width: 100%;
+        }
+    }
+</style>
+
+<div class="detail-flex-container">
+
+    <div class="column-left">
+        <div class="product-image-box">
             <img src="@Url.Content(Model.ProductImage)" alt="@Model.ProductName" class="product-detail-image" />
         </div>
+    </div>
 
-      
-        <div class="detail-column-right">
+    <div class="column-right">
 
-            <h2 class="product-detail-name">@Model.ProductName</h2>
+        <h1 class="product-name">@Model.ProductName</h1>
 
-            <p class="product-detail-price">@String.Format("{0:N0}", Model.ProductPrice) đ</p>
+        <p class="product-price">@String.Format("{0:N0}", Model.ProductPrice) đ</p>
 
-            <hr />
+        <hr style="border-top: 1px solid #eee;" />
 
-            <div class="product-detail-description">
-                <p>@Model.ProductDecription</p>
+        @* ----------------------------------------------------------------- *@
+        @* LOGIC KIỂM TRA TỒN KHO & FORM ĐẶT HÀNG *@
+        @* ----------------------------------------------------------------- *@
+
+        @if (Model.Quantity > 0)
+        {
+            <div style="background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; padding: 10px; border-radius: 4px; margin-bottom: 20px; display: flex; justify-content: space-between;">
+                <span> Còn hàng: <span style="font-weight: bold;">@Model.Quantity</span> sản phẩm</span>
+                <span style="font-size: 12px; color: #666;">Giới hạn mua tối đa: @Model.Quantity</span>
             </div>
 
-            <hr />
-
-            @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+            using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
             {
-                @* Gửi ID sản phẩm đi *@
                 @Html.Hidden("productID", Model.ProductID)
 
-                <div class.form-inline">
-                    <label style="margin-right: 10px;">Số lượng:</label>
-                    <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px;" />
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <label style="margin-right: 15px; font-weight: bold;">Số lượng:</label>
 
-                    <button type="submit" class="btn btn-primary btn-lg add-to-cart-btn" style="margin-left: 15px;">
+                    <input type="number"
+                           name="quantity"
+                           value="1"
+                           min="1"
+                           max="@Model.Quantity" @* Thiết lập giới hạn tối đa *@
+                           style="padding: 8px; border: 1px solid #ccc; width: 80px; margin-right: 20px;"
+                           required />
+
+                    <button type="submit" style="background-color: #5cb85c; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-size: 18px; cursor: pointer;">
                         Thêm vào giỏ hàng
                     </button>
                 </div>
             }
+        }
+        else
+        {
+            <div style="background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                 **Sản phẩm này tạm thời hết hàng!**
+            </div>
 
+            <button type="button" disabled style="background-color: #ccc; color: #666; border: none; padding: 10px 20px; border-radius: 4px; font-size: 18px; cursor: not-allowed;">
+                Đã hết hàng
+            </button>
+        }
+
+        <hr style="border-top: 1px solid #eee;" />
+
+        <h5 style="margin-top: 30px; font-weight: bold;">Mô tả chi tiết</h5>
+        <div style="line-height: 1.6; color: #555;">
+            <p>@Model.ProductDecription</p>
         </div>
     </div>
 </div>

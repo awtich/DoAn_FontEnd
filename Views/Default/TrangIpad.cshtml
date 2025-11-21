@@ -35,96 +35,30 @@
 <script src="~/Content/js/js_banner.js"></script>
 @* Best seller*@
 
-<section class="product-grid">
-    <a href="/Product/IpadAirM3" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
+<div class="product-list-container">
 
-        <img src="~/Content/img/0035054_ipad-air-m3-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad air m3</h3>
-        <p class="price">37.999.000đ</p>
-    </a>
+    <h2 class="list-title">Tất cả sản phẩm iPhone</h2>
 
-    <a href="/Product/IpadA16" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/0035754_ipad-a16-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad a16</h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="/Product/IpadAirM3" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
+    @* Dùng class .product-grid thay cho .row *@
+    <div class="product-grid">
 
-        <img src="~/Content/img/0035054_ipad-air-m3-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad air m3</h3>
-        <p class="price">37.999.000đ</p>
-    </a>
+        @* Lặp qua Model *@
+        @foreach (var product in Model)
+        {
+            @*  *@
+            <div class="product-grid-item">
+                <a class="home-product-link" href="@Url.Action("Details", "Product", new { id = product.ProductID })">
+                    <div class="home-product-card">
 
-    <a href="/Product/IpadA16" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/0035754_ipad-a16-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad a16</h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="/Product/IpadAirM3" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" class="home-product-image" />
 
-        <img src="~/Content/img/0035054_ipad-air-m3-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad air m3</h3>
-        <p class="price">37.999.000đ</p>
-    </a>
+                        <h5 class="home-product-name">@product.ProductName</h5>
 
-    <a href="/Product/IpadA16" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/0035754_ipad-a16-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad a16</h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="/Product/IpadAirM3" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
+                        <p class="home-product-price">@String.Format("{0:N0}", product.ProductPrice) đ</p>
 
-        <img src="~/Content/img/0035054_ipad-air-m3-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad air m3</h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="/Product/IpadA16" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/0035754_ipad-a16-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad a16</h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="/Product/IpadAirM3" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/0035054_ipad-air-m3-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad air m3</h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="/Product/IpadA16" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/0035754_ipad-a16-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad a16</h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="/Product/IpadAirM3" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/0035054_ipad-air-m3-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad air m3</h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="/Product/IpadA16" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/0035754_ipad-a16-11-inch-wi-fi_240.png" alt="Alternate Text" />
-        <h3>Ipad a16</h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-
-</section>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>

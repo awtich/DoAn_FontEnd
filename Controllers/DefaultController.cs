@@ -49,6 +49,13 @@ namespace DoAn_web.Controllers
                 .OrderByDescending(p => p.ProductID)// lay sp moi nhat
                 .Take(4)// lay 4 sp
                 .ToList();
+            // 4 sp watch
+            viewModel.PhuKiens = db.Products
+    .Include(p => p.Category)
+    .Where(p => p.Category.CategoryName == "PhuKien")// loc
+    .OrderByDescending(p => p.ProductID)// lay sp moi nhat
+    .Take(4)// lay 4 sp
+    .ToList();
             //6 gui du lieu ve View
             return View(viewModel);
 
@@ -87,16 +94,8 @@ namespace DoAn_web.Controllers
         [Authorize(Roles = "C")] // Chỉ Customer mới xem được
         public ActionResult OrderHistory()
         {
-            int customerID = GetCurrentCustomerID();
-
-            // Lấy tất cả đơn hàng của Customer này
-            // Sắp xếp đơn mới nhất lên đầu
-            var orders = db.Orders
-                           .Where(o => o.CustomerID == customerID)
-                           .Include("OrderDetails.Product") // Lấy luôn chi tiết và sản phẩm
-                           .OrderByDescending(o => o.OrderDate)
-                           .ToList();
-
+            int customerID = GetCurrentCustomerID(); // (Copy hàm này từ CartController sang hoặc gom vào BaseController)
+            var orders = db.Orders.Where(o => o.CustomerID == customerID).OrderByDescending(o => o.OrderDate).ToList();
             return View(orders);
         }
         
@@ -115,7 +114,14 @@ namespace DoAn_web.Controllers
         }
         public ActionResult TrangIpad()
         {
-            return View();
+            var Ipads = db.Products
+                           .Include(p => p.Category)
+                           .Where(p => p.Category.CategoryName == "ipad")
+                           .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                           .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(Ipads);
         }
         public ActionResult TrangMussic()
         {

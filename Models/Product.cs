@@ -26,6 +26,8 @@ namespace DoAn_web.Models
         public string ProductDecription { get; set; }
         public decimal ProductPrice { get; set; }
         public string ProductImage { get; set; }
+        public int Quantity { get; set; }
+        public int SoldQuantity { get; set; }
     
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

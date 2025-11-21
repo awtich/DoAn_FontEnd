@@ -51,10 +51,19 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool Check = db.Categories.Any(c=>c.CategoryName.ToLower()==category.CategoryName.Trim().ToLower());
+                if (Check)
+                {
+                    // neu co roi thi thong bao loi
+                    ModelState.AddModelError("CategoryName", "Tên danh mục này đã tồn tại");
+                    return View(category);
+                }
                 db.Categories.Add(category);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            
+
 
             return View(category);
         }
@@ -83,10 +92,17 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(category).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                // ktra coi co trung ten ko
+                bool CheckTen = db.Categories.Any(c => c.CategoryName.ToLower() == category.CategoryName.Trim().ToLower()
+                                                  && c.CategoryID != category.CategoryID );
+                if (CheckTen)
+                {
+                    ModelState.AddModelError("CategoryName", "Tên danh mục này đã được sử dụng!error... ");
+                    return View(category);
+                }
             }
+            db.Entry(category).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
             return View(category);
         }
 
@@ -111,6 +127,12 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Category category = db.Categories.Find(id);
+            // kt coi co sp ko
+            if (category.Products.Count > 0)
+            {
+                TempData["Error"] = "Không thể xóa danh mục này vì đang có sản phẩm bên trong!error...";
+                return RedirectToAction("Index");
+            }
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");

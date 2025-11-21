@@ -13,6 +13,17 @@
 
     <div class="card-body">
 
+        @* --- BẮT ĐẦU: KIỂM TRA RÀNG BUỘC ĐÃ BÁN (SoldQuantity) --- *@
+        @if (Model.SoldQuantity > 0)
+        {
+            <div class="alert alert-warning mb-4">
+                ⚠️ **RÀNG BUỘC ĐÃ BÁN:** Sản phẩm này đã bán được **@Model.SoldQuantity** lần và **KHÔNG THỂ XÓA** để đảm bảo lịch sử đơn hàng.
+                <br />
+                Bạn chỉ có thể lưu trữ (archive) hoặc ẩn nó khỏi website.
+            </div>
+        }
+        @* --- KẾT THÚC: KIỂM TRA RÀNG BUỘC ĐÃ BÁN --- *@
+
         <div class="alert alert-danger" role="alert">
             <strong>Cảnh báo!</strong> Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này không?
             <br>
@@ -69,14 +80,27 @@
 
         </dl>
 
-    </div> <div class="card-footer bg-light">
+    </div>
+
+    <div class="card-footer bg-light">
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
 
-            <input type="submit" value="Xác nhận Xóa" class="btn btn-danger" />
+            @* --- LOGIC NÚT XÓA: CHỈ HIỆN KHI CHƯA CÓ ĐƠN HÀNG --- *@
+            if (Model.SoldQuantity == 0)
+            {
+                <input type="submit" value="Xác nhận Xóa" class="btn btn-danger" />
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary" disabled title="Không thể xóa do đã có đơn hàng.">
+                    Không thể xóa
+                </button>
+            }
+            @* --- KẾT THÚC LOGIC NÚT XÓA --- *@
 
-            @Html.ActionLink("Quay về", "Index", null, new { @class = "btn btn-secondary ms-2" })
+            @Html.ActionLink("Quay về", "Index", null, new { @class = "" })
         }
     </div>
 </div>

@@ -80,8 +80,7 @@ namespace DoAn_web.Controllers
                     string encryptedTicket = FormsAuthentication.Encrypt(ticket);
                     var authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
                     Response.Cookies.Add(authCookie);
-
-                    // 🔥 THÊM KHỐI KIỂM TRA NÀY VÀO
+                    
                     // (Nếu có ReturnUrl và nó là link nội bộ, trả họ về đó)
                     if (!String.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                     {
@@ -102,7 +101,10 @@ namespace DoAn_web.Controllers
         // dang xuat
         public ActionResult Logout()
         {
+
             FormsAuthentication.SignOut(); // xoa (Cookie)
+            Session.Clear();// xoa tất cả DB tạm thời trong cart
+            Session.Abandon();// kết thúc secion ngay và lun 
             return RedirectToAction("Index", "Default"); 
         }
         // giai phong bo nho

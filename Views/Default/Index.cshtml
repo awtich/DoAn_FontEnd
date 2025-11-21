@@ -37,7 +37,7 @@
 @*iphone *@
 <div class="category-section">
     <h2 class="category-title">IPhone</h2>
-    
+
     <div class="row">
         @foreach (var product in Model.Iphones)
         {
@@ -144,6 +144,35 @@
     </div>
     <div class="view-more-container">
         <a href="@Url.Action("TrangWatch", "Default")" class="view-more-btn">Xem tất cả Watch ></a>
+    </div>
+</div>
+
+
+@* trang PhuKien*@
+
+<div class="category-section">
+    <h2 class="category-title">Phu Kien</h2>
+    <div class="row">
+        @foreach (var product in Model.PhuKiens)
+        {
+            //Chia 4 cot
+            <div class="col-md-3">
+                <a class="home-product-link" href="@Url.Action("Details", "Product", new { id = product.ProductID })">
+                    <div class="home-product-card">
+
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" class="home-product-image" />
+
+                        <h5 class="home-product-name">@product.ProductName</h5>
+
+                        <p class="home-product-price">@String.Format("{0:N0}", product.ProductPrice) đ</p>
+
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+    <div class="view-more-container">
+        <a href="@Url.Action("PhuKien", "Default")" class="view-more-btn">Xem tất cả Watch ></a>
     </div>
 </div>
 
