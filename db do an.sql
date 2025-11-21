@@ -461,3 +461,14 @@ REFERENCES [dbo].[Category] ([CategoryID])
 GO
 ALTER TABLE [dbo].[Product] CHECK CONSTRAINT [FK_Pro_Category]
 GO
+USE [MyStore2026]
+GO
+
+-- 1. Thêm cột Quantity (Tồn kho) - Mặc định cho 100 cái để test
+ALTER TABLE [dbo].[Product]
+ADD [Quantity] INT NOT NULL DEFAULT 100;
+
+-- 2. Thêm cột SoldQuantity (Đã bán) - Mặc định là 0
+ALTER TABLE [dbo].[Product]
+ADD [SoldQuantity] INT NOT NULL DEFAULT 0;
+GO
