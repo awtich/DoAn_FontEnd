@@ -1,63 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DoAn_web.Models;
+using DoAn_web.ViewModels; // Thư viện chứa RegisterViewModel
+using System;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using DoAn_web.Models;
-using DoAn_web.ViewModels;// thu vien chua RegisterViewModel
-using System.Web.Security;// thu vien cho ma hoa mat khau
+using System.Web.Security; // Thư viện cho FormsAuthentication
 
 namespace DoAn_web.Controllers
 {
     public class AccountController : Controller
     {
         private MyStore2026Entities db = new MyStore2026Entities();
-        // dang ki
+
+        // GET: Account/Register
         public ActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register( RegisterViewModel model)
+        public ActionResult Register(RegisterViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                // kiem tra username co ton tai ko
+                // Bước 1: Kiểm tra Username đã tồn tại
                 var checkUser = db.Users.FirstOrDefault(u => u.Username == model.Username);
                 if (checkUser != null)
                 {
-                    ModelState.AddModelError("", "Username này đã tồn tại.");
-                    return View(model); // Trả về form và báo lỗi
+                    ModelState.AddModelError("Username", "Tên đăng nhập này đã tồn tại.");
+                    return View(model);
                 }
-                // bat dau luu thong tin
-                // tao user
+
+                // Bước 2: LƯU THÔNG TIN (KHÔNG MÃ HÓA MẬT KHẨU)
+
+                // Tạo User
                 var user = new User();
                 user.Username = model.Username;
-                user.UserRole = "C"; // dat vai tro customer
-                // ma hoa mat khau
-                user.Password= System.Web.Helpers.Crypto.HashPassword( model.Password);
+                user.UserRole = "C"; // Vai trò Customer
+                //  XÓA MÃ HÓA: Lưu mật khẩu dưới dạng PLAIN TEXT 
+                user.Password = model.Password;
                 db.Users.Add(user);
-                // tao customer
+
+                // Tạo Customer
                 var customer = new Customer();
                 customer.CustomerName = model.CustomerName;
                 customer.CustomerPhone = model.CustomerPhone;
                 customer.CustomerEmail = model.CustomerEmail;
                 customer.CustomerAddress = model.CustomerAddress;
-                customer.Username = model.Username; // lien ket khoa ngoai
+                customer.Username = model.Username;
                 db.Customers.Add(customer);
+
                 db.SaveChanges();
                 return RedirectToAction("Login");
             }
             return View(model);
         }
+
+        // GET: Account/Login
         public ActionResult Login()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string Username, string Password, string ReturnUrl) // <-- 🔥 THÊM "string ReturnUrl" VÀO ĐÂY
+        public ActionResult Login(string Username, string Password, string ReturnUrl)
         {
             if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
             {
@@ -69,26 +77,25 @@ namespace DoAn_web.Controllers
 
             if (user != null)
             {
-                bool isPasswordCorrect = System.Web.Helpers.Crypto.VerifyHashedPassword(user.Password, Password);
+                // XÓA GIẢI MÃ: So sánh mật khẩu PLAIN TEXT trực tiếp 
+                bool isPasswordCorrect = (user.Password == Password);
 
                 if (isPasswordCorrect)
                 {
-                    // ... (Code tạo ticket và cookie) ...
+                    // Code tạo ticket và cookie
                     var ticket = new FormsAuthenticationTicket(
                         1, user.Username, DateTime.Now, DateTime.Now.AddMinutes(30), true, user.UserRole.Trim()
                     );
                     string encryptedTicket = FormsAuthentication.Encrypt(ticket);
                     var authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
                     Response.Cookies.Add(authCookie);
-                    
-                    // (Nếu có ReturnUrl và nó là link nội bộ, trả họ về đó)
+
                     if (!String.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                     {
                         return Redirect(ReturnUrl);
                     }
                     else
                     {
-                        // Nếu không, về trang chủ
                         return RedirectToAction("Index", "Default");
                     }
                 }
@@ -98,16 +105,16 @@ namespace DoAn_web.Controllers
             return View();
         }
 
-        // dang xuat
+        // Action Logout
         public ActionResult Logout()
         {
-
-            FormsAuthentication.SignOut(); // xoa (Cookie)
-            Session.Clear();// xoa tất cả DB tạm thời trong cart
-            Session.Abandon();// kết thúc secion ngay và lun 
-            return RedirectToAction("Index", "Default"); 
+            FormsAuthentication.SignOut();
+            Session.Clear();
+            Session.Abandon();
+            return RedirectToAction("Index", "Default");
         }
-        // giai phong bo nho
+
+        // Giải phóng bộ nhớ
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -117,16 +124,7 @@ namespace DoAn_web.Controllers
             base.Dispose(disposing);
         }
 
-
-
-
-
-
-
-
-
-
-        // GET: Account
+        // GET: Account/Index
         public ActionResult Index()
         {
             return View();

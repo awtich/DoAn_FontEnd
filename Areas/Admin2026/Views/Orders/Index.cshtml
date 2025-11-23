@@ -1,102 +1,104 @@
-﻿@model IEnumerable<DoAn_web.Models.Order>
+﻿@model IEnumerable<DoAn_web.Models.Order> 
 
 @{
-    // 1. Đặt tiêu đề trang
     ViewBag.Title = "Quản lý Đơn hàng";
     Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<p class="mb-4">
-    @Html.ActionLink(" Thêm đơn hàng mới", "Create", null, new { @class = "btn btn-primary" })
-</p>
+<h2 class="mb-4 text-primary">Quản lý Đơn hàng</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@* --- KHỐI TÌM KIẾM VÀ LỌC --- *@
+@using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "mb-4 d-flex align-items-center" }))
+{
+    <div class="input-group" style="width: 350px;">
+        <input type="text"
+               name="searchString"
+               value="@ViewBag.CurrentFilter"
+               placeholder="Tìm kiếm theo Mã ĐH/Tên khách hàng..."
+               class="form-control" />
+        <button type="submit" class="btn btn-primary">Tìm</button>
+    </div>
+
+    @* Gửi lại tham số sắp xếp cũ *@
+    @Html.Hidden("sortOrder", (string)ViewBag.CurrentSort)
+
+    @Html.ActionLink("Reset", "Index", null, new { @class = "btn btn-secondary ms-3" })
+}
+@* ----------------------------- *@
+
 
 <div class="card shadow-sm">
     <div class="card-body">
 
-        <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Khách hàng</th>
 
-            <table class="table table-striped table-hover align-middle">
-
-                <thead class="table-dark">
+                    @* SẮP XẾP: Click vào header để sắp xếp *@
+                    
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Địa chỉ</th>
+                    <th>Thanh toán</th>
+                    <th>Vận chuyển</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    // Fix CS1963: Gán cho biến cục bộ
+                    var currentOrder = item;
                     <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Customer.CustomerName)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.OrderDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.TotalAmount)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.PaymentStatus)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.AddressDelivery)
-                        </th>
-                        <th class="text-end" style="width: 200px;">Hành động</th>
+                        <td>#@currentOrder.OrderID</td>
+                        <td>
+                            @if (currentOrder.Customer != null)
+                            {
+                                <span>@currentOrder.Customer.CustomerName</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted fw-bold">(Khách hàng không tồn tại)</span>
+                            }
+                        </td>
+                        <td>@currentOrder.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td class="fw-bold text-danger">@String.Format("{0:N0}", currentOrder.TotalAmount) đ</td>
+                        <td>@currentOrder.AddressDelivery</td>
+
+                        <td>
+                            <span class="badge @(currentOrder.PaymentStatus != null && currentOrder.PaymentStatus.Contains("Đã") ? "bg-success" : "bg-warning text-dark")">
+                                @currentOrder.PaymentStatus
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge @(currentOrder.ShippingStatus != null && currentOrder.ShippingStatus.Contains("thành công") ? "bg-primary" : (currentOrder.ShippingStatus != null && currentOrder.ShippingStatus.Contains("Hủy") ? "bg-danger" : "bg-info text-dark"))">
+                                @currentOrder.ShippingStatus
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            @Html.ActionLink("Sửa TT", "Edit", new { id = currentOrder.OrderID }, new { @class = "btn btn-sm btn-primary" })
+                        </td>
                     </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Customer.CustomerName)
-                            </td>
-
-                            <td>
-                                @item.OrderDate.ToString("dd/MM/yyyy")
-                            </td>
-
-                            <td>
-                                @item.TotalAmount.ToString("N0")đ
-                            </td>
-
-                            <td>
-                                @if (item.PaymentStatus == "Đã thanh toán")
-                                {
-                                    <span class="badge bg-success">@item.PaymentStatus</span>
-                                }
-                                else if (item.PaymentStatus == "Chờ xử lý")
-                                {
-                                    <span class="badge bg-warning text-dark">@item.PaymentStatus</span>
-                                }
-                                else if (item.PaymentStatus == "Đã hủy")
-                                {
-                                    <span class="badge bg-danger">@item.PaymentStatus</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@item.PaymentStatus</span>
-                                }
-                            </td>
-
-                            <td>
-                                @Html.DisplayFor(modelItem => item.AddressDelivery)
-                            </td>
-
-                            <td class="text-end">
-                                @Html.ActionLink("Sửa", "Edit", new { id = item.OrderID }, new { @class = "btn btn-sm btn-warning" })
-                                @Html.ActionLink("Chi tiết", "Details", new { id = item.OrderID }, new { @class = "btn btn-sm btn-info ms-1" })
-                                @Html.ActionLink("Xóa", "Delete", new { id = item.OrderID }, new { @class = "btn btn-sm btn-danger ms-1" })
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
-</div> 
+</div>
 
-<!-----
+@* --- KHỐI THÔNG TIN ĐẾM (THAY THẾ PHÂN TRANG) --- *@
+<div class="d-flex justify-content-end align-items-center mt-3">
 
-###--> @*🎨 Giải thích các thay đổi
+    <div class="text-muted small">
+        Tổng số đơn hàng: @Model.Count()
+    </div>
 
-* **Đồng bộ Layout:** Dùng `card`, `card-body`, `table-responsive`, `table-striped`, `table-dark` để đồng bộ với các trang `Index` khác.
-* **Định dạng Ngày:** Dùng `@item.OrderDate.ToString("dd/MM/yyyy")` để chuyển định dạng ngày giờ sang `Ngày/Tháng/Năm`.
-* **Định dạng Tiền:** Dùng `@item.TotalAmount.ToString("N0")` để thêm dấu phẩy hàng nghìn.
-* **Định dạng Trạng thái:** Dùng logic `@if` để kiểm tra `item.PaymentStatus`. Tùy thuộc vào giá trị(ví dụ: "Đã thanh toán", "Đã hủy"...), nó sẽ hiển thị một "badge"(nhãn) với màu sắc tương ứng(`bg - success`, `bg - danger`...).
-* **Các nút: **Các link `ActionLink` được đổi thành `btn` (nút)với màu sắc và kích thước(`btn - sm`) phù hợp.*@
+</div>

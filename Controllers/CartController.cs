@@ -48,22 +48,33 @@ namespace DoAn_web.Controllers
             return View(cart); // Gửi danh sách item đến View
         }
 
-        
+
         // (Action này được gọi từ trang Details)
         // POST: /Cart/AddToCart
         [HttpPost]
         public ActionResult AddToCart(int productID, int quantity)
         {
-            List<CartItem> cart = GetCart(); // Lấy giỏ hàng
-
-            // 1. Kiểm tra xem item đã có trong giỏ chưa
-            // 
+            List<CartItem> cart = GetCart();
             CartItem item = cart.Where(i => i != null).FirstOrDefault(i => i.ProductID == productID);
+
             var productDB = db.Products.Find(productID);
-            if (productDB.Quantity < quantity)
+
+            // 
+            int requiredQuantity = quantity;
+            if (item != null)
             {
-                // sua sao
+                // Nếu đã có trong giỏ, tính tổng số lượng sẽ có sau khi thêm
+                requiredQuantity = item.Quantity + quantity;
             }
+
+            if (productDB == null || productDB.Quantity < requiredQuantity)
+            {
+                // Nếu sản phẩm không tồn tại hoặc không đủ số lượng
+                TempData["Error"] = $"Sản phẩm {productDB?.ProductName ?? "này"} chỉ còn {productDB?.Quantity ?? 0} sản phẩm. Vui lòng giảm số lượng.";
+                return RedirectToAction("Index"); // Quay lại trang giỏ hàng với thông báo lỗi
+            }
+            // 
+
 
             if (item != null)
             {
@@ -72,6 +83,7 @@ namespace DoAn_web.Controllers
             }
             else
             {
+                // Nếu chưa có, tạo item mới
                 if (productDB != null)
                 {
                     var newItem = new CartItem
@@ -86,14 +98,12 @@ namespace DoAn_web.Controllers
 
                 }
             }
-            SaveCart(cart); // Lưu lại vào Session
-
-            // Quay lại trang giỏ hàng
+            SaveCart(cart);
             return RedirectToAction("Index");
         }
 
 
-        
+
         // GET: /Cart/RemoveFromCart/5
         public ActionResult RemoveFromCart(int productID)
         {
@@ -150,77 +160,79 @@ namespace DoAn_web.Controllers
 
             return View(); // Mở trang Checkout.cshtml
         }
-        
+
         [HttpPost]
         [Authorize(Roles = "C")]
         [ValidateAntiForgeryToken]
         public ActionResult PlaceOrder(string AddressDelivery, decimal TotalAmount, string PaymentMethod)
         {
-            // Lấy giỏ hàng từ Session và kiểm tra tính hợp lệ
             List<CartItem> cart = GetCart();
             if (cart.Count == 0 || cart.Any(i => i == null))
             {
-                return RedirectToAction("Index"); // Giỏ hàng rỗng, quay về
+                return RedirectToAction("Index");
             }
 
             try
             {
-                //  TẠO ĐƠN HÀNG (Lưu vào bảng [Order])
+                // TẠO ĐƠN HÀNG
                 var order = new Order();
-                order.CustomerID = GetCurrentCustomerID(); // Hàm helper lấy ID
+                order.CustomerID = GetCurrentCustomerID();
                 order.OrderDate = DateTime.Now;
                 order.TotalAmount = TotalAmount;
                 order.AddressDelivery = AddressDelivery;
-                order.PaymentMethod = PaymentMethod; // Lưu phương thức thanh toán
-                order.PaymentStatus = (PaymentMethod == "Tiền mặt (COD)") ? "Chờ xử lý" : "Chờ xác nhận chuyển khoảng ";
+
+                // 
+                // Dùng PaymentMethod để set trạng thái PaymentStatus
+                order.PaymentStatus = (PaymentMethod == "Tiền mặt (COD)") ? "Chờ xử lý" : "Chờ xác nhận chuyển khoảng";
+
+                // 
+                order.ShippingStatus = "Chờ lấy hàng";
 
                 db.Orders.Add(order);
-                db.SaveChanges(); 
+                db.SaveChanges(); // Lưu Order để lấy OrderID
 
-                //  TẠO CHI TIẾT ĐƠN HÀNG (Lưu vào bảng [OrderDetail])
+                // TẠO CHI TIẾT & TRỪ KHO
                 foreach (var item in cart)
                 {
                     if (item != null)
                     {
-                        // tim sp tu kho
                         var product = db.Products.Find(item.ProductID);
+
                         // kt ban neu con du hang tronh kho
                         if (product != null && product.Quantity >= item.Quantity)
                         {
-                            // tao chi tiet don hang
                             var detail = new OrderDetail();
                             detail.OrderID = order.OrderID;
                             detail.ProductID = item.ProductID;
                             detail.Quantity = item.Quantity;
                             detail.UnitPrice = item.UnitPrice;
                             db.OrderDetails.Add(detail);
-                            // cap nhat nhat cap nhat  so luong tu kho
+
+                            // cap nhat nhat cap nhat  so luong tu kho
                             product.Quantity = product.Quantity - item.Quantity;
                             product.SoldQuantity = product.SoldQuantity + item.Quantity;
 
                         }
                         else
                         {
+                            // Ném lỗi để rollback (nếu có transaction) hoặc nhảy xuống catch
                             throw new Exception($"Sản phẩm {item.ProductName} không đủ số lượng tồn kho (Hiện còn: {product?.Quantity ?? 0}).");
                         }
                     }
                 }
 
-                db.SaveChanges(); // 
+                db.SaveChanges(); // Lưu chi tiết và cập nhật kho
 
-                // 
-                Session["Cart"] = null; // Xóa giỏ hàng
-                TempData["OrderSuccessMessage"] = "Đặt hàng thành công!"; 
+                Session["Cart"] = null;
+                TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
 
-                //  Chuyển hướng đến trang Lịch sử mua hàng
+                // Chuyển hướng đến trang Lịch sử mua hàng
                 return RedirectToAction("OrderHistory", "Default");
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi (ví dụ: lỗi kết nối DB, model không khớp)
-                ViewBag.Error = "Lỗi: " + ex.Message;
+                ViewBag.Error = "Lỗi đặt hàng: " + ex.Message;
 
-                // Cần gửi lại ViewBag cho trang Checkout để hiển thị lại
                 ViewBag.Cart = cart;
                 ViewBag.Customer = db.Customers.Find(GetCurrentCustomerID());
                 return View("Checkout");

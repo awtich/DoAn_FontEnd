@@ -1,12 +1,9 @@
-﻿using DoAn_web.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Data;
+﻿// File: /Areas/Admin2026/Controllers/OrdersController.cs
+using DoAn_web.Models;
+using PagedList;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 
 namespace DoAn_web.Areas.Admin2026.Controllers
@@ -15,133 +12,71 @@ namespace DoAn_web.Areas.Admin2026.Controllers
     {
         private MyStore2026Entities db = new MyStore2026Entities();
 
-        // GET: Admin2026/Orders
-        public ActionResult Index()
+        // Tải dữ liệu cần thiết cho Edit View (Customer, OrderDetails)
+        private void LoadEditViewData(Order order)
         {
-            var orders = db.Orders.Include(o => o.Customer);
-            return View(orders.ToList());
-        }
-
-        // GET: Admin2026/Orders/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            // FIX: Tải lại Customer nếu nó bị thiếu (chỉ xảy ra khi POST thất bại)
+            if (order.Customer == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Order order = db.Orders.Find(id);
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-            return View(order);
-        }
-
-        // GET: Admin2026/Orders/Create
-        public ActionResult Create()
-        {
-            // 1. (Code cũ của bạn) Gửi danh sách khách hàng
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "CustomerName");
-
-            // 2. (Code cũ của bạn) Gửi dữ liệu địa chỉ
-            var customers = db.Customers.ToList();
-            var customerAddressData = customers.Select(c => new {
-                Id = c.CustomerID,
-                Address = c.CustomerAddress
-            }).ToList();
-            ViewBag.CustomerAddressesJson = new HtmlString(JsonConvert.SerializeObject(customerAddressData));
-
-            // 
-            // ---- THÊM MỚI LOGIC NÀY ----
-            //
-            // 3. Tạo một model Order mới và gán ngày giờ mặc định
-            var newOrder = new Order
-            {
-                OrderDate = DateTime.Now // Gán ngày giờ hiện tại
-            };
-
-            // 4. Trả model này về View
-            return View(newOrder);
-        }
-
-        // POST: Admin2026/Orders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "OrderID,CustomerID,OrderDate,TotalAmount,PaymentStatus,AddressDelivery")] Order order)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Orders.Add(order);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                order.Customer = db.Customers.Find(order.CustomerID);
             }
 
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "CustomerName", order.CustomerID);
-            return View(order);
+            // Tải Order Details (Sản phẩm trong đơn hàng)
+            // Bao gồm cả Product để View hiển thị tên sản phẩm
+            ViewBag.OrderDetails = db.OrderDetails.Include(od => od.Product)
+                                                .Where(od => od.OrderID == order.OrderID).ToList();
         }
-        // GET: Admin2026/Orders/Edit/5
+
+
+        // GET: Admin2026/Orders/Edit/5 (Trang sửa trạng thái)
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            // THÊM .Include(o => o.Customer) VÀO ĐÂY
-            Order order = db.Orders.Include(o => o.Customer).SingleOrDefault(o => o.OrderID == id);
+            // 1. Tải Đơn hàng và Khách hàng
+            Order order = db.Orders.Include(o => o.Customer).FirstOrDefault(o => o.OrderID == id);
+            if (order == null) return HttpNotFound();
 
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-
-            // (Không cần gửi ViewBag.CustomerID nữa vì chúng ta đã làm nó readonly)
+            // 2. 🔥 VIỆC CẦN LÀM: TRUY VẤN CHI TIẾT SẢN PHẨM VÀ GÁN VÀO VIEWBAG 🔥
+            ViewBag.OrderDetails = db.OrderDetails.Include(od => od.Product)
+                                                .Where(od => od.OrderID == id).ToList();
 
             return View(order);
         }
 
-        // POST: Admin2026/Orders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Admin2026/Orders/Edit/5 (Lưu thay đổi trạng thái)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "OrderID,CustomerID,OrderDate,TotalAmount,PaymentStatus,AddressDelivery")] Order order)
+        [ValidateInput(false)]
+        public ActionResult Edit([Bind(Include = "OrderID,PaymentStatus,ShippingStatus")] Order order)
         {
-            if (ModelState.IsValid)
+            var orderDB = db.Orders.Find(order.OrderID);
+
+            if (orderDB != null)
             {
-                db.Entry(order).State = System.Data.Entity.EntityState.Modified;
+                // Kiểm tra ràng buộc: Không cho phép giao hàng thành công nếu chưa thanh toán
+                if (order.ShippingStatus == "Đã giao thành công" && order.PaymentStatus != "Đã thanh toán")
+                {
+                    ModelState.AddModelError("ShippingStatus", "Không thể hoàn tất giao hàng khi Thanh toán chưa là 'Đã thanh toán'.");
+
+                    // 🔥 FIX: TẢI LẠI TẤT CẢ DỮ LIỆU BỊ THIẾU 🔥
+                    // Hàm này sẽ tải lại Model.Customer và ViewBag.OrderDetails
+                    LoadEditViewData(order);
+
+                    return View(order); // Quay lại View mà không bị crash
+                }
+
+                // --- LOGIC LƯU THÀNH CÔNG ---
+
+                orderDB.PaymentStatus = order.PaymentStatus;
+                orderDB.ShippingStatus = order.ShippingStatus;
+
                 db.SaveChanges();
+                TempData["SuccessMessage"] = $"Đã cập nhật trạng thái đơn hàng #{order.OrderID} thành công!";
                 return RedirectToAction("Index");
             }
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "CustomerName", order.CustomerID);
-            return View(order);
-        }
 
-        // GET: Admin2026/Orders/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Order order = db.Orders.Find(id);
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-            return View(order);
-        }
-
-        // POST: Admin2026/Orders/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Order order = db.Orders.Find(id);
-            db.Orders.Remove(order);
-            db.SaveChanges();
+            // Nếu đơn hàng không tồn tại, quay về Index
             return RedirectToAction("Index");
         }
 
@@ -153,6 +88,29 @@ namespace DoAn_web.Areas.Admin2026.Controllers
             }
             base.Dispose(disposing);
         }
+        public ActionResult Index(string searchString)
+        {
+            // Tải orders, buôc tải Customer (Eager Loading)
+            var orders = db.Orders.Include(o => o.Customer).AsQueryable();
 
+            //  FIX: SẮP XẾP THEO OrderID GIẢM DẦN (Lớn nhất -> Nhỏ nhất) 
+            orders = orders.OrderByDescending(o => o.OrderID);
+
+            // --- LOGIC TÌM KIẾM ---
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                string searchUpper = searchString.ToUpper();
+
+                // Tìm kiếm theo Tên Khách hàng hoặc Mã Đơn hàng (OrderID)
+                orders = orders.Where(o =>
+                    o.Customer.CustomerName.ToUpper().Contains(searchUpper) ||
+                    o.OrderID.ToString().Contains(searchUpper)
+                );
+            }
+            ViewBag.CurrentFilter = searchString;
+
+            // Thực thi query và trả về toàn bộ danh sách đã lọc (nếu có tìm kiếm)
+            return View(orders.ToList());
+        }
     }
 }
