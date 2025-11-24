@@ -195,6 +195,7 @@
     <Compile Include="Views\WebController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\img\QR-chuyen-khoan.jpg" />
     <Content Include="Content\img\0030238_apple-watch-ultra-2-gps-cellular-49mm-ocean-2024_240.png" />
     <Content Include="Content\img\0032869_apple-watch-se-gps-cellular-2024-sport-band-size-sm_240.jpeg" />
     <Content Include="Content\img\0034122_macbook-air-m3-13-inch-8gb-ram-256gb-ssd_240.jpeg" />
