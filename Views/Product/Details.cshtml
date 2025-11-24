@@ -1,68 +1,13 @@
-﻿@model DoAn_web.Models.Product
+﻿@using System.Collections.Generic
+@using DoAn_web.Models
+@model DoAn_web.Models.Product
 @{
     ViewBag.Title = Model.ProductName;
     Layout = "~/Views/Shared/_HomeLayout.cshtml";
+    var combo = ViewBag.ComboAccessories as List<Product>;
+    var related = ViewBag.RelatedProducts as List<DoAn_web.Models.Product>;
 }
-
-<style>
-    /* ---------------------------------------------------- */
-    /* CSS CHO LAYOUT RESPONSIVE (Sử dụng Flexbox) */
-    /* ---------------------------------------------------- */
-    .detail-flex-container {
-        display: flex;
-        flex-wrap: wrap; /* Cho phép các cột xuống hàng trên mobile */
-        gap: 30px; /* Khoảng cách giữa các cột */
-        padding: 30px 15px;
-        max-width: 1200px;
-        margin: auto;
-    }
-
-    .column-left {
-        flex: 1 1 40%; /* Chiếm khoảng 40% trên desktop */
-        max-width: 450px; /* Giới hạn chiều rộng cho hình ảnh */
-    }
-
-    .column-right {
-        flex: 1 1 55%; /* Chiếm khoảng 55% trên desktop */
-    }
-
-    .product-image-box {
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 8px;
-        background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-
-    .product-detail-image {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        border-radius: 6px;
-    }
-
-    .product-name {
-        font-size: 32px;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .product-price {
-        font-size: 28px;
-        color: #d9534f; /* Màu đỏ nổi bật */
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-
-    /* Media Query: Khi màn hình nhỏ hơn 768px (Mobile) */
-    @@media (max-width: 768px) {
-        .column-left, .column-right {
-            flex-basis: 100%; /* Mỗi cột chiếm toàn bộ chiều rộng */
-            max-width: 100%;
-        }
-    }
-</style>
+<link href="~/Content/style_K/Style_TrangCuThe.css" rel="stylesheet" />
 
 <div class="detail-flex-container">
 
@@ -80,7 +25,7 @@
 
         <hr style="border-top: 1px solid #eee;" />
 
-      
+
 
         @if (Model.Quantity > 0)
         {
@@ -113,7 +58,7 @@
         else
         {
             <div style="background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-                 **Sản phẩm này tạm thời hết hàng!**
+                **Sản phẩm này tạm thời hết hàng!**
             </div>
 
             <button type="button" disabled style="background-color: #ccc; color: #666; border: none; padding: 10px 20px; border-radius: 4px; font-size: 18px; cursor: not-allowed;">
@@ -129,3 +74,99 @@
         </div>
     </div>
 </div>
+@if (combo != null && combo.Any())
+{
+    var accessoryCount = combo.Count;
+    decimal comboTotal = combo.Sum(a => a.ProductPrice);   // nếu ProductPrice là decimal
+
+    <form action="@Url.Action("AddComboToCart", "Cart")" method="post">
+        @* hidden cho sản phẩm chính *@
+        @Html.Hidden("productID", Model.ProductID)
+
+        @* hidden cho từng phụ kiện *@
+        @foreach (var a in combo)
+        {
+            @Html.Hidden("accessoryIds", a.ProductID)
+        }
+
+        <div class="combo-wrapper">
+            <h3 class="combo-title">Mua kèm giá sốc</h3>
+
+            <div class="combo-inner">
+                <!-- Sản phẩm chính bên trái -->
+                <div class="combo-main-product">
+                    <img src="@Url.Content(Model.ProductImage)" alt="@Model.ProductName" />
+                    <div class="combo-main-name">@Model.ProductName</div>
+                    <div class="combo-main-price">
+                        @String.Format("{0:N0}", Model.ProductPrice) đ
+                    </div>
+                </div>
+
+                <div class="combo-plus">+</div>
+
+                <!-- Các phụ kiện ở giữa -->
+                <div class="combo-items">
+                    @foreach (var a in combo)
+                    {
+                        <div class="combo-item">
+                            <a href="@Url.Action("Details", "Product", new { id = a.ProductID })"
+                               style="text-decoration:none; color:inherit;">
+                                <img src="@Url.Content(a.ProductImage)" alt="@a.ProductName" />
+                                <div class="combo-item-name">@a.ProductName</div>
+
+                                <div class="combo-item-price-label">Giá bán:</div>
+                                <div class="combo-item-price">
+                                    @String.Format("{0:N0}", a.ProductPrice) đ
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <!-- Tổng tiền + nút mua combo bên phải -->
+                <div class="combo-summary">
+                    <div class="combo-summary-title">Tổng giá 3 phụ kiện</div>
+                    <div class="combo-summary-price">
+                        @String.Format("{0:N0}", comboTotal) đ
+                    </div>
+                    <div class="combo-summary-count">
+                        Đã chọn: @accessoryCount sản phẩm
+                    </div>
+
+                    <button type="submit" class="combo-summary-button">
+                        Mua combo @(@accessoryCount + 1) sản phẩm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+
+
+@if (related != null && related.Any())
+{
+    <div class="related-products-wrapper">
+        <h3 class="related-title">Sản phẩm tương tự</h3>
+
+        <div class="related-list">
+            @foreach (var p in related)
+            {
+                <div class="related-item">
+                    <a href="@Url.Action("Details", "Product", new { id = p.ProductID })"
+                       style="text-decoration:none; color:inherit;">
+                        <img src="@Url.Content(p.ProductImage)" alt="@p.ProductName" />
+
+                        <div class="related-item-name">
+                            @p.ProductName
+                        </div>
+
+                        <div class="related-item-price">
+                            @String.Format("{0:N0}", p.ProductPrice) đ
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}

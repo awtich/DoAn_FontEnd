@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
+using System.Data.Entity;
 
 
 
@@ -43,6 +44,24 @@ namespace DoAn_web.Controllers
             // neu ko tim thay thi bao loi
             if (product == null) 
                 return HttpNotFound();
+            // lấy 3 sp phụ kiện
+            var comboAccessories = db.Products
+                             .Include(p => p.Category)
+                             .Where(p => p.Category.CategoryName == "PhuKien")
+                             .OrderByDescending(p => p.ProductID)
+                             .Take(3)   // lấy 3–4 cái tuỳ bạn
+                             .ToList();
+            ViewBag.ComboAccessories = comboAccessories;
+
+            // cùng Category, khác ProductID hiện tại, lấy tối đa 4 sp
+            var related = db.Products
+                    .Where(p => p.CategoryID == product.CategoryID
+                             && p.ProductID != product.ProductID)
+                    .OrderByDescending(p => p.ProductID)
+                    .Take(4)
+                    .ToList();
+
+            ViewBag.RelatedProducts = related;
 
             return View(product);
 
