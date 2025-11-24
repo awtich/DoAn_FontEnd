@@ -26,62 +26,66 @@ namespace DoAn_web.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. Kiểm tra Username đã tồn tại chưa
                 var checkUser = db.Users.FirstOrDefault(u => u.Username == model.Username);
                 if (checkUser != null)
                 {
-                    ModelState.AddModelError("Username", "Tên đăng nhập này đã tồn tại.");
+                    ModelState.AddModelError("", "Tên đăng nhập đã tồn tại.");
                     return View(model);
                 }
 
                 try
                 {
-                    // 2. BƯỚC 1: Tạo và LƯU User trước
+                    // 1. Tạo User
                     var user = new User();
                     user.Username = model.Username;
-                    user.UserRole = "C";
-                    user.Password = model.Password; // Lưu pass thường (bài tập)
+                    user.Password = model.Password;
+                    user.UserRole = "C"; // Đảm bảo DB cột này cho phép lưu chữ "C"
 
                     db.Users.Add(user);
-                    db.SaveChanges(); // <--- Lưu User để lấy Username
+                    db.SaveChanges(); // Lưu User lần 1
 
-                    // 3. BƯỚC 2: Tạo và Lưu Customer
+                    // 2. Tạo Customer
                     var customer = new Customer();
                     customer.CustomerName = model.CustomerName;
                     customer.CustomerPhone = model.CustomerPhone;
                     customer.CustomerEmail = model.CustomerEmail;
                     customer.CustomerAddress = model.CustomerAddress;
-                    customer.Username = model.Username; // Username đã an toàn tồn tại
+                    customer.Username = model.Username;
 
                     db.Customers.Add(customer);
-                    db.SaveChanges(); // <--- Lưu Customer
+                    db.SaveChanges(); // Lưu Customer lần 2
 
-                    // Thành công thì chuyển hướng
                     return RedirectToAction("Login");
                 }
-                // --- ĐOẠN CODE QUAN TRỌNG ĐỂ SỬA LỖI VALIDATION ---
                 catch (DbEntityValidationException ex)
                 {
-                    foreach (var entityValidationErrors in ex.EntityValidationErrors)
+                    // Bắt lỗi Validation cụ thể từ Entity Framework
+                    foreach (var x in ex.EntityValidationErrors)
                     {
-                        foreach (var validationError in entityValidationErrors.ValidationErrors)
+                        foreach (var error in x.ValidationErrors)
                         {
-                            // Hiện lỗi cụ thể ra màn hình (Ví dụ: Cột Email không được để trống)
-                            ModelState.AddModelError("", "Lỗi tại dòng " + validationError.PropertyName + ": " + validationError.ErrorMessage);
+                            ModelState.AddModelError("", "Lỗi DB: " + error.ErrorMessage);
                         }
                     }
+                    // Nếu lỡ tạo user rồi thì xóa đi để tránh rác
+                    var u = db.Users.Find(model.Username);
+                    if (u != null) { db.Users.Remove(u); db.SaveChanges(); }
+
                     return View(model);
                 }
                 catch (Exception ex)
                 {
-                    // Các lỗi khác (Lỗi kết nối DB, lỗi hệ thống...)
                     ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
+                    // Nếu lỡ tạo user rồi thì xóa đi
+                    var u = db.Users.Find(model.Username);
+                    if (u != null) { db.Users.Remove(u); db.SaveChanges(); }
+
                     return View(model);
                 }
             }
-
             return View(model);
         }
+        
 
         // GET: Account/Login
         public ActionResult Login()
