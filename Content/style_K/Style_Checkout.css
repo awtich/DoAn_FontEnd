@@ -158,3 +158,10 @@
         margin-top: 30px; /* Thêm khoảng cách khi xếp chồng */
     }
 }
+.qr-chuyen-khoan {
+    width: 60%; /* Chiều rộng bạn muốn */
+    height: 50%; /* Chiều cao BẰNG chiều rộng */
+
+    object-fit: cover; /* Cắt ảnh để lấp đầy khung mà không méo */
+    object-position: center 20%; /* (Mẹo) Căn chỉnh vị trí để QR lọt vào giữa */
+}
