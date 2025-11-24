@@ -24,6 +24,7 @@
             @foreach (var item in cart)
             {
                 <div class="checkout-item">
+                    <img src="@Url.Content(item.ProductImage)" height="100px" width="100px" />
                     <span>@item.ProductName (x @item.Quantity)</span>
                     <strong>@String.Format("{0:N0}", item.TotalPrice) đ</strong>
                 </div>
@@ -35,53 +36,66 @@
         </div>
 
         @* --- CỘT BÊN PHẢI (THÔNG TIN GIAO HÀNG & FORM) --- *@
-        <div class="checkout-col-address">
-            <h4>Thông tin giao hàng:</h4>
+    <div class="checkout-col-address">
+        <h4>Thông tin giao hàng:</h4>
 
-            @* Hiển thị thông tin Customer (lấy từ ViewBag) *@
-            <p><strong>Khách hàng:</strong> @customer.CustomerName</p>
-            <p><strong>Điện thoại:</strong> @customer.CustomerPhone</p>
-            <p><strong>Email:</strong> @customer.CustomerEmail</p>
+        @* Hiển thị thông tin Customer (lấy từ ViewBag) *@
+        <p><strong>Khách hàng:</strong> @customer.CustomerName</p>
+        <p><strong>Điện thoại:</strong> @customer.CustomerPhone</p>
+        <p><strong>Email:</strong> @customer.CustomerEmail</p>
 
+        <hr />
+
+        @* Form này sẽ gửi đến Action "PlaceOrder" *@
+        @using (Html.BeginForm("PlaceOrder", "Cart", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @* 1. Ô ĐỊA CHỈ GIAO HÀNG (đã có) *@
+            <div class="form-row">
+                <label class="custom-label">Địa chỉ giao hàng:</label>
+                <input type="text" name="AddressDelivery" class="custom-input" value="@customer.CustomerAddress" required />
+            </div>
+
+            @*  2. LỰA CHỌN PHƯƠNG THỨC THANH TOÁN *@
+            <hr />
+            <h4>Phương thức thanh toán:</h4>
+            <div class="form-row">
+                <div class="payment-options">
+
+                    <input type="radio" name="PaymentMethod" value="Tiền mặt (COD)" id="pay_cod" checked required />
+                    <label for="pay_cod" style="font-weight: normal; margin-right: 15px;">Thanh toán khi nhận hàng (COD)</label>
+
+                    <br />
+
+                    <input type="radio" name="PaymentMethod" value="Chuyển khoản" id="pay_bank" required />
+                    <label for="pay_bank" style="font-weight: normal;">Chuyển khoản ngân hàng</label>
+                </div>
+            </div>
+            <div id="qrBox" style="display:none; margin-top:15px;">
+                <h4>Quét mã để thanh toán:</h4>
+                <img class="qr-chuyen-khoan" src="@Url.Content("~/Content/img/QR-chuyen-khoan.jpg")" />
+            </div>
+            
             <hr />
 
-            @* Form này sẽ gửi đến Action "PlaceOrder" *@
-            @using (Html.BeginForm("PlaceOrder", "Cart", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
+            @* Gửi tổng số tiền đi (ẩn) *@
+            <input type="hidden" name="TotalAmount" value="@totalAmount" />
 
-                @* 1. Ô ĐỊA CHỈ GIAO HÀNG (đã có) *@
-                <div class="form-row">
-                    <label class="custom-label">Địa chỉ giao hàng:</label>
-                    <input type="text" name="AddressDelivery" class="custom-input" value="@customer.CustomerAddress" required />
-                </div>
-
-                @*  2. LỰA CHỌN PHƯƠNG THỨC THANH TOÁN *@
-                <hr />
-                <h4>Phương thức thanh toán:</h4>
-                <div class="form-row">
-                    <div class="payment-options">
-
-                        <input type="radio" name="PaymentMethod" value="Tiền mặt (COD)" id="pay_cod" checked required />
-                        <label for="pay_cod" style="font-weight: normal; margin-right: 15px;">Thanh toán khi nhận hàng (COD)</label>
-
-                        <br />
-
-                        <input type="radio" name="PaymentMethod" value="Chuyển khoản" id="pay_bank" required />
-                        <label for="pay_bank" style="font-weight: normal;">Chuyển khoản ngân hàng</label>
-                    </div>
-                </div>
-                <hr />
-
-                @* Gửi tổng số tiền đi (ẩn) *@
-                <input type="hidden" name="TotalAmount" value="@totalAmount" />
-
-                <div class="form-row" style="margin-top: 20px;">
-                    <button type="submit" class="custom-button button-success" style="width: 100%;">
-                        XÁC NHẬN ĐẶT HÀNG
-                    </button>
-                </div>
-            }
-        </div>
+            <div class="form-row" style="margin-top: 20px;">
+                <button type="submit" class="custom-button button-success" style="width: 100%;">
+                    XÁC NHẬN ĐẶT HÀNG
+                </button>
+            </div>
+        }
+    </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll("input[name='PaymentMethod']").forEach(function (r) {
+        r.addEventListener("change", function () {
+            document.getElementById("qrBox").style.display =
+                r.value === "Chuyển khoản" ? "block" : "none";
+        });
+    });
+</script>

@@ -30,25 +30,63 @@
                     <span class="order-total-price">Tổng tiền: @String.Format("{0:N0}", order.TotalAmount) đ</span>
                 </div>
 
-                @* 6. Thay "panel-body" bằng "order-card-body" *@
                 <div class="order-card-body">
-                    <p><strong>Ngày đặt:</strong> @order.OrderDate.ToString("dd/MM/yyyy")</p>
-                    <p><strong>Giao đến:</strong> @order.AddressDelivery</p>
-                    <p><strong>Trạng thái:</strong> @order.PaymentStatus</p>
 
-                    <h5>Chi tiết sản phẩm:</h5>
+                    <div class="order-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Ngày đặt:</span>
+                            <span class="info-value">@order.OrderDate.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Trạng thái đơn hàng:</span>
+                            <span class="info-value" style="color: #d70018; font-weight: 600;">@order.PaymentStatus</span>
+                        </div>
+                        <div class="info-item full-width">
+                            <span class="info-label">Giao đến:</span>
+                            <span class="info-value">@order.AddressDelivery</span>
+                        </div>
+                        <div class="info-item full-width">
+                            <span class="info-label">Tình trạng:</span>
+                            <span class="info-value">@order.ShippingStatus</span>
+                        </div>
+                    </div>
 
-                    @* 7. Thay "table" bằng "order-detail-table" *@
-                    <table class="order-detail-table">
+                    <div class="divider"></div>
+
+                    @* Danh sách sản phẩm *@
+                    <table class="product-table">
                         @foreach (var detail in order.OrderDetails)
                         {
                             <tr>
-                                <td>@detail.Product.ProductName</td>
-                                <td>Số lượng: @detail.Quantity</td>
-                                <td>@String.Format("{0:N0}", detail.UnitPrice) đ</td>
+                                <td class="prod-img">
+                                    <img src="@Url.Content(detail.Product.ProductImage)" />
+                                </td>
+                                <td class="prod-info">
+                                    <div class="prod-name">@detail.Product.ProductName</div>
+                                    <div class="prod-qty">x @detail.Quantity</div>
+                                </td>
+                                <td class="prod-price">
+                                    @String.Format("{0:N0}", detail.UnitPrice) đ
+                                </td>
                             </tr>
+
                         }
                     </table>
+                    <div class="action-footer">
+                        @*Chỉ hiện nút huỷ khi có những trạng thái duới*@
+                        @if ((order.PaymentStatus == "Chờ xác nhận chuyển khoản"|| order.PaymentStatus == "Chờ xác nhận chuyển khoảng" || order.PaymentStatus == "Chờ xử lý" || order.PaymentStatus == "Chưa thanh toán") && order.ShippingStatus != "Đang vận chuyển" && order.ShippingStatus != "Đã giao thành công")
+                        {
+                            <a href="@Url.Action("CancelOrder", "Default", new { id = order.OrderID })"
+                               class="btn-cancel-order"
+                               onclick="return confirm('Bạn có muốn huỷ đơn hàng này ?')">
+                                Huỷ đơn hàng
+                            </a>
+                        }
+                        @if (order.PaymentStatus == "Đã huỷ" || order.PaymentStatus == "Đã huỷ !")
+                        {
+                            <span style="color: #999; font-style: italic;">Đơn hàng đã được hủy</span>
+                        }
+                    </div>
                 </div>
             </div>
         }
