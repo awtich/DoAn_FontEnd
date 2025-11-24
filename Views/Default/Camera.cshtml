@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Camera";
+    ViewBag.Title = "TrangCamera";
     Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
@@ -14,12 +14,14 @@
     <div class="slider">
         <div class="slides">
             <div class="slide" onclick="window.location.href=''">
-                <img src="~/Content/img/Banner_Camera1.png" />
+                <img src="~/Content/img/danh mục-camera_Danh mục copy 2.png">
             </div>
             <div class="slide" onclick="window.location.href=''">
-                <img src="~/Content/img/Banner_Camera2.png" />
+                <img src="~/Content/img/danh mục-camera_Danh mục.png">
             </div>
-
+            <div class="slide" onclick="window.location.href=''">
+                <img src="~/Content/img/DM.jpg">
+            </div>
 
         </div>
 
@@ -32,150 +34,32 @@
     </div>
 </section>
 <script src="~/Content/js/js_banner.js"></script>
+@* Best seller*@
 
-<section class="product-grid">
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
+<div class="product-list-container">
 
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
+    <h2 class="list-title">Tất cả sản phẩm Camera</h2>
 
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
+    @* Dùng class .product-grid thay cho .row *@
+    <div class="product-grid">
 
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
+        @* Lặp qua Model *@
+        @foreach (var product in Model)
+        {
+            @*  *@
+            <div class="product-grid-item">
+                <a class="home-product-link" href="@Url.Action("Details", "Product", new { id = product.ProductID })">
+                    <div class="home-product-card">
 
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" class="home-product-image" />
 
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
+                        <h5 class="home-product-name">@product.ProductName</h5>
 
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
+                        <p class="home-product-price">@String.Format("{0:N0}", product.ProductPrice) đ</p>
 
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
-
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
-
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
-
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
-
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
-
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-    <a href="#" class="product-card">
-        @*<div class="Tag New">Mới</div>*@
-
-        <img src="~/Content/img/Sp_Camera1.jpeg" />
-
-        <h3>Máy ảnh Fujifilm X100VI  </h3>
-        <p class="price">37.999.000đ</p>
-    </a>
-
-    <a href="#" class="product-card">
-        @*<div class="Tag Sale">Giảm 0%</div>
-            <div class="Tag New">Mới</div>*@
-        <img src="~/Content/img/Sp_Camera2.jpeg" />
-
-
-        <h3>Máy ảnh Sony RX100 VII </h3>
-        <p class="price">37.999.000đ <span class="old-price">34.999.000đ</span></p>
-    </a>
-</section>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
