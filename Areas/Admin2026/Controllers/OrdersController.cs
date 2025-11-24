@@ -1,10 +1,12 @@
 ﻿// File: /Areas/Admin2026/Controllers/OrdersController.cs
+
 using DoAn_web.Models;
 using PagedList;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Collections.Generic; // Cần thêm namespace này cho List<SelectListItem>
 
 namespace DoAn_web.Areas.Admin2026.Controllers
 {
@@ -15,7 +17,8 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         // Tải dữ liệu cần thiết cho Edit View (Customer, OrderDetails)
         private void LoadEditViewData(Order order)
         {
-            // FIX: Tải lại Customer nếu nó bị thiếu (chỉ xảy ra khi POST thất bại)
+            // 🔥 CẢI TIẾN: Luôn tải lại Customer (cần thiết cho cả GET và POST thất bại)
+            // Nếu order.Customer đã bị hủy do Bind trong POST, nó sẽ được tải lại ở đây.
             if (order.Customer == null)
             {
                 order.Customer = db.Customers.Find(order.CustomerID);
@@ -24,7 +27,7 @@ namespace DoAn_web.Areas.Admin2026.Controllers
             // Tải Order Details (Sản phẩm trong đơn hàng)
             // Bao gồm cả Product để View hiển thị tên sản phẩm
             ViewBag.OrderDetails = db.OrderDetails.Include(od => od.Product)
-                                                .Where(od => od.OrderID == order.OrderID).ToList();
+                                                 .Where(od => od.OrderID == order.OrderID).ToList();
         }
 
 
@@ -33,13 +36,12 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            // 1. Tải Đơn hàng và Khách hàng
-            Order order = db.Orders.Include(o => o.Customer).FirstOrDefault(o => o.OrderID == id);
+            // 1. Chỉ cần tìm Order
+            Order order = db.Orders.Find(id);
             if (order == null) return HttpNotFound();
 
-            // 2. 🔥 VIỆC CẦN LÀM: TRUY VẤN CHI TIẾT SẢN PHẨM VÀ GÁN VÀO VIEWBAG 🔥
-            ViewBag.OrderDetails = db.OrderDetails.Include(od => od.Product)
-                                                .Where(od => od.OrderID == id).ToList();
+            // 2. 🔥 DÙNG LoadEditViewData để tải Customer và OrderDetails
+            LoadEditViewData(order);
 
             return View(order);
         }
@@ -48,7 +50,7 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Edit([Bind(Include = "OrderID,PaymentStatus,ShippingStatus")] Order order)
+        public ActionResult Edit([Bind(Include = "OrderID,PaymentStatus,ShippingStatus,CustomerID")] Order order)
         {
             var orderDB = db.Orders.Find(order.OrderID);
 
@@ -59,11 +61,15 @@ namespace DoAn_web.Areas.Admin2026.Controllers
                 {
                     ModelState.AddModelError("ShippingStatus", "Không thể hoàn tất giao hàng khi Thanh toán chưa là 'Đã thanh toán'.");
 
-                    // 🔥 FIX: TẢI LẠI TẤT CẢ DỮ LIỆU BỊ THIẾU 🔥
-                    // Hàm này sẽ tải lại Model.Customer và ViewBag.OrderDetails
+                    // 🔥 BƯỚC 1: KHÔI PHỤC DỮ LIỆU HIỂN THỊ TỪ DB (Thêm đoạn này) 🔥
+                    order.OrderDate = orderDB.OrderDate;       // Lấy lại ngày đặt
+                    order.TotalAmount = orderDB.TotalAmount;   // Lấy lại tổng tiền
+                    order.AddressDelivery = orderDB.AddressDelivery; // Lấy lại địa chỉ
+
+                    // BƯỚC 2: Tải các quan hệ (Customer, OrderDetails)
                     LoadEditViewData(order);
 
-                    return View(order); // Quay lại View mà không bị crash
+                    return View(order);
                 }
 
                 // --- LOGIC LƯU THÀNH CÔNG ---
@@ -80,6 +86,8 @@ namespace DoAn_web.Areas.Admin2026.Controllers
             return RedirectToAction("Index");
         }
 
+        // ... Các Action khác (Index, Dispose) ...
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -88,12 +96,13 @@ namespace DoAn_web.Areas.Admin2026.Controllers
             }
             base.Dispose(disposing);
         }
+
         public ActionResult Index(string searchString)
         {
             // Tải orders, buôc tải Customer (Eager Loading)
             var orders = db.Orders.Include(o => o.Customer).AsQueryable();
 
-            //  FIX: SẮP XẾP THEO OrderID GIẢM DẦN (Lớn nhất -> Nhỏ nhất) 
+            //  FIX: SẮP XẾP THEO OrderID GIẢM DẦN (Lớn nhất -> Nhỏ nhất) 
             orders = orders.OrderByDescending(o => o.OrderID);
 
             // --- LOGIC TÌM KIẾM ---

@@ -1,179 +1,112 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using DoAn_web.Models;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using DoAn_web.Models;
 
 namespace DoAn_web.Areas.Admin2026.Controllers
 {
-   
     public class CustomersController : Controller
     {
         private MyStore2026Entities db = new MyStore2026Entities();
 
-        // GET: Admin2026/Customers
-        public ActionResult Index()
+        // 1. DANH SÁCH KHÁCH HÀNG (Kèm tìm kiếm)
+        public ActionResult Index(string searchString)
         {
-            var customers = db.Customers.Include(c => c.User);
-            return View(customers.ToList());
+            var customers = db.Customers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                // Tìm theo Tên, SĐT hoặc Email
+                customers = customers.Where(c => c.CustomerName.Contains(searchString)
+                                              || c.CustomerPhone.Contains(searchString)
+                                              || c.CustomerEmail.Contains(searchString));
+            }
+
+            ViewBag.CurrentFilter = searchString;
+            return View(customers.ToList()); // Nếu muốn phân trang thì thêm PagedList sau
         }
 
-        // GET: Admin2026/Customers/Details/5
+        // 2. XEM CHI TIẾT (Kèm lịch sử đơn hàng)
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             Customer customer = db.Customers.Find(id);
-            if (customer == null)
-            {
-                return HttpNotFound();
-            }
+            if (customer == null) return HttpNotFound();
+
+            // Lấy danh sách đơn hàng của khách này để hiển thị bên dưới
+            ViewBag.OrderHistory = db.Orders.Where(o => o.CustomerID == id).OrderByDescending(o => o.OrderDate).ToList();
+
             return View(customer);
         }
 
-        // GET: Admin2026/Customers/Create
-        public ActionResult Create()
-        {
-            // Đảm bảo ở đây là "Username", "Username"
-            ViewBag.Username = new SelectList(db.Users, "Username", "Username");
-            return View();
-        }
-
-        // POST: Admin2026/Customers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        // POST: Admin2026/Customers/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CustomerID,CustomerName,CustomerPhone,CustomerEmail,CustomerAddress,Username")] Customer customer)
-        {
-            // 1. Kiểm tra SĐT đã tồn tại chưa
-            if (db.Customers.Any(c => c.CustomerPhone == customer.CustomerPhone))
-            {
-                ModelState.AddModelError("CustomerPhone", "Số điện thoại này đã được sử dụng");
-            }
-
-            // 2. Kiểm tra Email đã tồn tại chưa
-            if (db.Customers.Any(c => c.CustomerEmail == customer.CustomerEmail))
-            {
-                ModelState.AddModelError("CustomerEmail", "Email này đã được sử dụng");
-            }
-
-            // 
-            // ---- THÊM MỚI LOGIC NÀY ----
-            //
-            // 3. Kiểm tra Username (Tài khoản) đã được liên kết chưa
-            if (db.Customers.Any(c => c.Username == customer.Username))
-            {
-                ModelState.AddModelError("Username", "Tài khoản này đã được liên kết với một khách hàng khác");
-            }
-            // ---- KẾT THÚC THÊM MỚI ----
-            //
-
-            if (ModelState.IsValid)
-            {
-                db.Customers.Add(customer);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.Username = new SelectList(db.Users, "Username", "Username", customer.Username);
-            return View(customer);
-        }
-
-        // GET: Admin2026/Customers/Edit/5
+        // 3. SỬA THÔNG TIN (GET)
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             Customer customer = db.Customers.Find(id);
-            if (customer == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.Username = new SelectList(db.Users, "Username", "Username", customer.Username);
+            if (customer == null) return HttpNotFound();
             return View(customer);
         }
 
-        // POST: Admin2026/Customers/Edit/5
+        // 3. SỬA THÔNG TIN (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "CustomerID,CustomerName,CustomerPhone,CustomerEmail,CustomerAddress,Username")] Customer customer)
         {
-            // 1. Kiểm tra SĐT (loại trừ chính khách hàng này)
-            if (db.Customers.Any(c => c.CustomerPhone == customer.CustomerPhone && c.CustomerID != customer.CustomerID))
-            {
-                ModelState.AddModelError("CustomerPhone", "Số điện thoại này đã được sử dụng bởi một tài khoản khác");
-            }
-
-            // 2. Kiểm tra Email (loại trừ chính khách hàng này)
-            if (db.Customers.Any(c => c.CustomerEmail == customer.CustomerEmail && c.CustomerID != customer.CustomerID))
-            {
-                ModelState.AddModelError("CustomerEmail", "Email này đã được sử dụng bởi một tài khoản khác");
-            }
-
-            // 
-            // ---- THÊM MỚI LOGIC NÀY ----
-            //
-            // 3. Kiểm tra Username (loại trừ chính khách hàng này)
-            if (db.Customers.Any(c => c.Username == customer.Username && c.CustomerID != customer.CustomerID))
-            {
-                ModelState.AddModelError("Username", "Tài khoản này đã được liên kết với một khách hàng khác");
-            }
-            // ---- KẾT THÚC THÊM MỚI ----
-            //
-
             if (ModelState.IsValid)
             {
-                db.Entry(customer).State = System.Data.Entity.EntityState.Modified;
+                db.Entry(customer).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            ViewBag.Username = new SelectList(db.Users, "Username", "Password", customer.Username);
             return View(customer);
         }
 
+        // 4. XÓA KHÁCH HÀNG (Có kiểm tra đơn hàng)
         // GET: Admin2026/Customers/Delete/5
+        // Hàm này chỉ để HIỂN THỊ trang xác nhận, chưa xóa gì cả
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             Customer customer = db.Customers.Find(id);
-            if (customer == null)
+            if (customer == null) return HttpNotFound();
+
+            // Kiểm tra ngay: Nếu đã có đơn hàng thì không cho vào trang xóa luôn
+            bool hasOrders = db.Orders.Any(o => o.CustomerID == id);
+            if (hasOrders)
             {
-                return HttpNotFound();
+                TempData["Error"] = "Không thể xóa! Khách hàng này đang có dữ liệu đơn hàng.";
+                return RedirectToAction("Index");
             }
+
             return View(customer);
         }
 
         // POST: Admin2026/Customers/Delete/5
+        // Hàm này mới thực sự XÓA dữ liệu
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             Customer customer = db.Customers.Find(id);
+
+            // Tìm tài khoản User liên kết để xóa luôn (nếu có)
+            var userAccount = db.Users.FirstOrDefault(u => u.Username == customer.Username);
+            if (userAccount != null)
+            {
+                db.Users.Remove(userAccount);
+            }
+
             db.Customers.Remove(customer);
             db.SaveChanges();
+
+            TempData["Success"] = "Đã xóa khách hàng thành công!";
             return RedirectToAction("Index");
         }
-
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            if (disposing) db.Dispose();
             base.Dispose(disposing);
         }
     }

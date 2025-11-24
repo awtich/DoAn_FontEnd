@@ -1,10 +1,12 @@
 ﻿using DoAn_web.Models;
-using DoAn_web.ViewModels; // Thư viện chứa RegisterViewModel
+using DoAn_web.ViewModels;
 using System;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security; // Thư viện cho FormsAuthentication
+using System.Web.Security;
+// QUAN TRỌNG: Thêm thư viện này để bắt lỗi Validation chi tiết
+using System.Data.Entity.Validation;
 
 namespace DoAn_web.Controllers
 {
@@ -24,7 +26,7 @@ namespace DoAn_web.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Bước 1: Kiểm tra Username đã tồn tại
+                // 1. Kiểm tra Username đã tồn tại chưa
                 var checkUser = db.Users.FirstOrDefault(u => u.Username == model.Username);
                 if (checkUser != null)
                 {
@@ -32,28 +34,52 @@ namespace DoAn_web.Controllers
                     return View(model);
                 }
 
-                // Bước 2: LƯU THÔNG TIN (KHÔNG MÃ HÓA MẬT KHẨU)
+                try
+                {
+                    // 2. BƯỚC 1: Tạo và LƯU User trước
+                    var user = new User();
+                    user.Username = model.Username;
+                    user.UserRole = "C";
+                    user.Password = model.Password; // Lưu pass thường (bài tập)
 
-                // Tạo User
-                var user = new User();
-                user.Username = model.Username;
-                user.UserRole = "C"; // Vai trò Customer
-                //  XÓA MÃ HÓA: Lưu mật khẩu dưới dạng PLAIN TEXT 
-                user.Password = model.Password;
-                db.Users.Add(user);
+                    db.Users.Add(user);
+                    db.SaveChanges(); // <--- Lưu User để lấy Username
 
-                // Tạo Customer
-                var customer = new Customer();
-                customer.CustomerName = model.CustomerName;
-                customer.CustomerPhone = model.CustomerPhone;
-                customer.CustomerEmail = model.CustomerEmail;
-                customer.CustomerAddress = model.CustomerAddress;
-                customer.Username = model.Username;
-                db.Customers.Add(customer);
+                    // 3. BƯỚC 2: Tạo và Lưu Customer
+                    var customer = new Customer();
+                    customer.CustomerName = model.CustomerName;
+                    customer.CustomerPhone = model.CustomerPhone;
+                    customer.CustomerEmail = model.CustomerEmail;
+                    customer.CustomerAddress = model.CustomerAddress;
+                    customer.Username = model.Username; // Username đã an toàn tồn tại
 
-                db.SaveChanges();
-                return RedirectToAction("Login");
+                    db.Customers.Add(customer);
+                    db.SaveChanges(); // <--- Lưu Customer
+
+                    // Thành công thì chuyển hướng
+                    return RedirectToAction("Login");
+                }
+                // --- ĐOẠN CODE QUAN TRỌNG ĐỂ SỬA LỖI VALIDATION ---
+                catch (DbEntityValidationException ex)
+                {
+                    foreach (var entityValidationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in entityValidationErrors.ValidationErrors)
+                        {
+                            // Hiện lỗi cụ thể ra màn hình (Ví dụ: Cột Email không được để trống)
+                            ModelState.AddModelError("", "Lỗi tại dòng " + validationError.PropertyName + ": " + validationError.ErrorMessage);
+                        }
+                    }
+                    return View(model);
+                }
+                catch (Exception ex)
+                {
+                    // Các lỗi khác (Lỗi kết nối DB, lỗi hệ thống...)
+                    ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
+                    return View(model);
+                }
             }
+
             return View(model);
         }
 
@@ -77,15 +103,17 @@ namespace DoAn_web.Controllers
 
             if (user != null)
             {
-                // XÓA GIẢI MÃ: So sánh mật khẩu PLAIN TEXT trực tiếp 
-                bool isPasswordCorrect = (user.Password == Password);
-
-                if (isPasswordCorrect)
+                if (user.Password == Password)
                 {
-                    // Code tạo ticket và cookie
                     var ticket = new FormsAuthenticationTicket(
-                        1, user.Username, DateTime.Now, DateTime.Now.AddMinutes(30), true, user.UserRole.Trim()
+                        1,
+                        user.Username,
+                        DateTime.Now,
+                        DateTime.Now.AddMinutes(30),
+                        true,
+                        user.UserRole.Trim()
                     );
+
                     string encryptedTicket = FormsAuthentication.Encrypt(ticket);
                     var authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
                     Response.Cookies.Add(authCookie);
@@ -114,7 +142,6 @@ namespace DoAn_web.Controllers
             return RedirectToAction("Index", "Default");
         }
 
-        // Giải phóng bộ nhớ
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -124,7 +151,6 @@ namespace DoAn_web.Controllers
             base.Dispose(disposing);
         }
 
-        // GET: Account/Index
         public ActionResult Index()
         {
             return View();

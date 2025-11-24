@@ -1,60 +1,48 @@
 ﻿@model DoAn_web.Models.User
 
 @{
-    // 1. Tiêu đề
-    ViewBag.Title = "Chỉnh sửa Tài khoản";
+    ViewBag.Title = "Cập nhật tài khoản";
     Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+
+    var roleList = new List<SelectListItem> {
+        new SelectListItem { Text = "Quản trị viên (Admin)", Value = "A" },
+        new SelectListItem { Text = "Khách hàng (Customer)", Value = "C" }
+    };
 }
 
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h5 class="mb-0">@ViewBag.Title: @Model.Username</h5>
-    </div>
-
-    <div class="card-body">
-
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-
-            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
-
-            @Html.HiddenFor(model => model.Username)
-
-            <div class="row mb-3">
-                @Html.LabelFor(model => model.Username, "Tên đăng nhập", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
-                <div class="col-sm-10">
-                    @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control-plaintext", @readonly = "readonly" } })
-                </div>
+<div class="row justify-content-center py-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning text-dark fw-bold">
+                <i class="fas fa-key me-2"></i>Cập nhật Tài khoản
             </div>
+            <div class="card-body p-4">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
 
-            <div class="row mb-3">
-                @Html.LabelFor(model => model.Password, "Mật khẩu mới", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
-                <div class="col-sm-10">
-                    @Html.PasswordFor(model => model.Password, new
-                    {
-                        @class = "form-control",
-                        placeholder = "Để trống nếu không muốn đổi mật khẩu",
-                        value = "" // QUAN TRỌNG: Luôn để rỗng
-                    })
-                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">TÊN ĐĂNG NHẬP (KHÔNG THỂ ĐỔI)</label>
+                        @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control bg-light", @readonly = "readonly" } })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mật khẩu mới</label>
+                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                        <small class="text-muted fst-italic">Nhập mật khẩu mới để thay đổi.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Phân quyền</label>
+                        @Html.DropDownListFor(model => model.UserRole, roleList, new { @class = "form-select" })
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning fw-bold">Lưu Thay Đổi</button>
+                        <a href="@Url.Action("Index")" class="btn btn-light">Quay lại</a>
+                    </div>
+                }
             </div>
-
-            <div class="row mb-3">
-                @Html.LabelFor(model => model.UserRole, "Quyền", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
-                <div class="col-sm-10">
-                    @Html.EditorFor(model => model.UserRole, new { htmlAttributes = new { @class = "form-control-plaintext", @readonly = "readonly" } })
-
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-sm-10 offset-sm-2">
-                    <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
-                    @Html.ActionLink("Quay về", "Index", null, new { @class = "btn btn-secondary ms-2" })
-                </div>
-            </div>
-        }
-
+        </div>
     </div>
 </div>

@@ -1,60 +1,52 @@
 ﻿@model DoAn_web.Models.User
 
 @{
-    // 1. Tiêu đề
-    ViewBag.Title = "Tạo tài khoản mới";
+    ViewBag.Title = "Thêm User Mới";
     Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+
+    // Tạo danh sách quyền để chọn
+    var roleList = new List<SelectListItem> {
+        new SelectListItem { Text = "Quản trị viên (Admin)", Value = "A" },
+        new SelectListItem { Text = "Khách hàng (Customer)", Value = "C" }
+    };
 }
 
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h5 class="mb-0">@ViewBag.Title</h5>
+<div class="row justify-content-center py-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="fas fa-user-plus me-2"></i>Thêm Tài khoản Mới
+            </div>
+            <div class="card-body p-4">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tên đăng nhập</label>
+                        @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", placeholder = "Ví dụ: admin2, staff01..." } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mật khẩu</label>
+                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", type = "password" } })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Phân quyền</label>
+                        @Html.DropDownListFor(model => model.UserRole, roleList, "--- Chọn quyền ---", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(model => model.UserRole, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold">Tạo Tài khoản</button>
+                        <a href="@Url.Action("Index")" class="btn btn-light">Hủy bỏ</a>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
-
-    <div class="card-body">
-
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-
-            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
-
-            <div class="row mb-3">
-                @Html.LabelFor(model => model.Username, "Tên đăng nhập", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
-                <div class="col-sm-10">
-                    @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                @Html.LabelFor(model => model.Password, "Mật khẩu", htmlAttributes: new { @class = "col-sm-2 col-form-label fw-bold" })
-                <div class="col-sm-10">
-                    @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-           
-
-            <div class="row mb-3">
-                <div class="col-sm-10 offset-sm-2">
-                    <input type="submit" value="Tạo mới" class="btn btn-primary" />
-                    @Html.ActionLink("Quay về", "Index", null, new { @class = "btn btn-secondary ms-2" })
-                </div>
-            </div>
-        }
-
-    </div>
-</div> ```
-
----
-
-@*### 🎨 Giải thích các thay đổi
-
-* **Layout (`<div class="card">
-    `):** Toàn bộ form được bọc trong `card` với `card-header` và `card-body` để đồng bộ.
-    * **Form ngang (Bootstrap 5):** Các class `form-horizontal`, `form-group` đã được thay bằng cấu trúc `row mb-3` mới.
-    * **Label (Nhãn):** Class `control-label col-md-2` được đổi thành `col-sm-2 col-form-label fw-bold` để căn chỉnh và in đậm nhãn.
-    * **Mật khẩu:** `@Html.EditorFor` đã được đổi thành `@Html.PasswordFor` để tự động tạo ra `<input type="password">`, giúp che mật khẩu khi người dùng gõ.
-    * **Nút bấm:** Link "Back to List" được chuyển lên nằm cạnh nút "Tạo mới" và được đổi thành `btn btn-secondary`.*@
+</div>
