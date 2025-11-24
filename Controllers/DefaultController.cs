@@ -51,11 +51,11 @@ namespace DoAn_web.Controllers
                 .ToList();
             // 4 sp watch
             viewModel.PhuKiens = db.Products
-    .Include(p => p.Category)
-    .Where(p => p.Category.CategoryName == "PhuKien")// loc
-    .OrderByDescending(p => p.ProductID)// lay sp moi nhat
-    .Take(4)// lay 4 sp
-    .ToList();
+            .Include(p => p.Category)
+            .Where(p => p.Category.CategoryName == "PhuKien")// loc
+            .OrderByDescending(p => p.ProductID)// lay sp moi nhat
+            .Take(4)// lay 4 sp
+            .ToList();
             //6 gui du lieu ve View
             return View(viewModel);
 
@@ -106,11 +106,25 @@ namespace DoAn_web.Controllers
 
         public ActionResult TrangMac()
         {
-            return View();
+            var Mac = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "Mac")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(Mac);
         }
         public ActionResult TrangWatch()
         {
-            return View();
+            var Watch = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "Watch")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(Watch);
         }
         public ActionResult TrangIpad()
         {
@@ -129,7 +143,14 @@ namespace DoAn_web.Controllers
         }
         public ActionResult TrangCamera()
         {
-            return View();
+            var Camera = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "Camera")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(Camera);
         }
         public ActionResult TrangAccessory()
         {
@@ -137,23 +158,58 @@ namespace DoAn_web.Controllers
         }
         public ActionResult PhuKien()
         {
-            return View();
+            var PhuKien = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "PhuKien")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(PhuKien);
         }
         public ActionResult AmThanh()
         {
-            return View();
+            var AmThanh = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "AmThanh")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(AmThanh);
         }
         public ActionResult Camera()
         {
-            return View();
+            var Camera = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "Camera")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(Camera);
         }
         public ActionResult GiaDung()
         {
-            return View();
+            var GiaDung = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "GiaDung")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(GiaDung);
         }
         public ActionResult MayLuot()
         {
-            return View();
+            var MayLuot = db.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Category.CategoryName == "MayLuot")
+                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
+                            .ToList();
+
+            //  Gửi danh sách ĐÃ LỌC này đến View
+            return View(MayLuot);
         }
         public ActionResult TinTuc()
         {

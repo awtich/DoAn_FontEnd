@@ -31,7 +31,21 @@
                     <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" />
                     <div class="cart-item-info">
                         <h4>@item.ProductName</h4>
-                        <p>Số lượng: @item.Quantity</p>
+
+                        <div class="cart-qty-wrapper">
+                            <span class="cart-qty-label">Số lượng:</span>
+
+                            <form action="@Url.Action("ChangeQuantity", "Cart")" method="post" class="cart-qty-form">
+                                @Html.Hidden("productID", item.ProductID)
+
+                                <button type="submit" name="change" value="-1" class="cart-qty-btn">−</button>
+
+                                <span class="cart-qty-display">@item.Quantity</span>
+
+                                <button type="submit" name="change" value="1" class="cart-qty-btn">+</button>
+                            </form>
+                        </div>
+
                         <p>Đơn giá: @String.Format("{0:N0}", item.UnitPrice) đ</p>
                     </div>
                     <div class="cart-item-price">
