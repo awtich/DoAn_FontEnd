@@ -44,6 +44,14 @@ namespace DoAn_web.Controllers
             // neu ko tim thay thi bao loi
             if (product == null) 
                 return HttpNotFound();
+            // coi coi sp nay co dang sale hay khom
+            var activeFlashSale = db.FlashSaleItems.FirstOrDefault(f =>
+                                   f.ProductID == id &&
+                                   f.IsActive == true &&
+                                   f.StartDate <= DateTime.Now &&
+                                   f.EndDate >= DateTime.Now);
+            // gui nay vo view
+            ViewBag.FlashSale = activeFlashSale;
             // lấy 3 sp phụ kiện
             var comboAccessories = db.Products
                              .Include(p => p.Category)

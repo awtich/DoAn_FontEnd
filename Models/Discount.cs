@@ -12,27 +12,26 @@ namespace DoAn_web.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Order
+    public partial class Discount
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Order()
+        public Discount()
         {
-            this.OrderDetails = new HashSet<OrderDetail>();
+            this.Orders = new HashSet<Order>();
         }
     
-        public int OrderID { get; set; }
-        public int CustomerID { get; set; }
-        public System.DateTime OrderDate { get; set; }
-        public decimal TotalAmount { get; set; }
-        public string PaymentStatus { get; set; }
-        public string AddressDelivery { get; set; }
-        public string ShippingStatus { get; set; }
-        public Nullable<int> DiscountID { get; set; }
-        public Nullable<decimal> DiscountAmount { get; set; }
+        public int DiscountID { get; set; }
+        public string DiscountName { get; set; }
+        public string DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+        public string CouponCode { get; set; }
+        public System.DateTime StartDate { get; set; }
+        public System.DateTime EndDate { get; set; }
+        public Nullable<decimal> MinimumOrderAmount { get; set; }
+        public Nullable<decimal> MaxDiscountAmount { get; set; }
+        public bool IsActive { get; set; }
     
-        public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual Discount Discount { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

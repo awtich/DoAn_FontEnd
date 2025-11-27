@@ -52,11 +52,28 @@ namespace DoAn_web.Controllers
                 TempData["Error"] = $"Sản phẩm {productDB?.ProductName ?? "này"} chỉ còn {productDB?.Quantity ?? 0} sản phẩm. Vui lòng giảm số lượng.";
                 return false;
             }
+            ////// bắt đầu flassh sale 
+            decimal finalPrice = productDB.ProductPrice;
+            // tim coi sp co dang chay flash sale ko
+            var activeFlashSale = db.FlashSaleItems.FirstOrDefault(f =>
+                                   f.ProductID == productID &&
+                                   f.IsActive == true &&
+                                   f.StartDate <= DateTime.Now &&
+                                   f.EndDate >= DateTime.Now);
+            // kiem tra coi con suat giam gia ko
+            if(activeFlashSale != null && activeFlashSale.SoldQuantity<activeFlashSale.SaleQuantityLimit)
+            {
+                finalPrice = activeFlashSale.SalePrice;
+                // neu thoa man thi lay gia tri ale
+            }
 
             // Nếu đã có trong giỏ → tăng số lượng
             if (item != null)
             {
                 item.Quantity += quantity;
+                // cap nhat gia moi
+                item.UnitPrice = finalPrice;
+                item.OriginalPrice = productDB.ProductPrice; // cap nhat gia moi nhat
             }
             else
             {
@@ -67,7 +84,8 @@ namespace DoAn_web.Controllers
                     ProductName = productDB.ProductName,
                     ProductImage = productDB.ProductImage,
                     Quantity = quantity,
-                    UnitPrice = productDB.ProductPrice
+                    UnitPrice = finalPrice,
+                    OriginalPrice = productDB.ProductPrice
                 };
                 cart.Add(newItem);
             }
@@ -212,6 +230,12 @@ namespace DoAn_web.Controllers
 
             ViewBag.Cart = cart;
             ViewBag.Customer = customer;
+            // lay thong tin giam gia tu session neu co
+            ViewBag.DiscountID = Session["DiscountID"];
+            ViewBag.DiscountAmount = (decimal?)Session["DiscountAmount"] ?? 0 ;
+            decimal subtotal = GetCartSubtotal(cart);
+            decimal finalTotal = subtotal - (decimal)ViewBag.DiscountAmount;
+            ViewBag.FinalTotal = finalTotal;
 
             return View();
         }
@@ -240,6 +264,9 @@ namespace DoAn_web.Controllers
                                       : "Chờ xác nhận chuyển khoảng";
 
                 order.ShippingStatus = "Chờ lấy hàng";
+                // lay thong tin tu session da luu trong ApplyCoupon
+                order.DiscountID = (int?)Session["DiscountID"];
+                order.DiscountAmount = (decimal?)Session["DiscountAmount"] ?? 0; // Lưu số tiền giảm
 
                 db.Orders.Add(order);
                 db.SaveChanges(); // để có OrderID
@@ -258,9 +285,20 @@ namespace DoAn_web.Controllers
                             detail.Quantity = item.Quantity;
                             detail.UnitPrice = item.UnitPrice;
                             db.OrderDetails.Add(detail);
-
+                            // ton kho
                             product.Quantity = product.Quantity - item.Quantity;
                             product.SoldQuantity = product.SoldQuantity + item.Quantity;
+                            // flash sale
+                            var flashSaleItem = db.FlashSaleItems.FirstOrDefault(f =>
+                         f.ProductID == item.ProductID &&
+                         f.IsActive == true &&
+                         f.StartDate <= DateTime.Now &&
+                         f.EndDate >= DateTime.Now);
+                            if (flashSaleItem != null)
+                            {
+                                // Cộng thêm số lượng khách vừa mua vào Flash Sale
+                                flashSaleItem.SoldQuantity += item.Quantity;
+                            }
                         }
                         else
                         {
@@ -270,14 +308,18 @@ namespace DoAn_web.Controllers
                 }
 
                 db.SaveChanges();
-
+                // xoa session sau khi dat hang thanh cong
                 Session["Cart"] = null;
+                Session["DiscountID"] = null; // xoa discountid
+                Session["DiscountAmount"] = null;// xoa discountAmount
                 TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
 
                 return RedirectToAction("OrderHistory", "Default");
             }
             catch (Exception ex)
             {
+                ViewBag.DiscountAmount = (decimal?)Session["DiscountAmount"] ?? 0;
+                ViewBag.FinalTotal = GetCartSubtotal(cart) - ViewBag.DiscountAmount;
                 ViewBag.Error = "Lỗi đặt hàng: " + ex.Message;
 
                 ViewBag.Cart = cart;
@@ -294,5 +336,61 @@ namespace DoAn_web.Controllers
             }
             return View();
         }
+        // ham2= tinh tong tien gio hang
+        private decimal GetCartSubtotal(List<CartItem> cart)
+        {
+            if (cart == null || cart.Count == 0 || cart.Any(i => i == null)) return 0;
+            return cart.Sum(i => i.Quantity * i.UnitPrice);
+        }
+        // ham xu li giam gia neu co
+        [HttpPost]
+        public ActionResult ApplyCoupon(string couponCode)
+        {
+            if (string.IsNullOrEmpty(couponCode))
+            {
+                TempData["CouponError"] = "Vui lòng nhập mã giảm giá.";
+                return RedirectToAction("Checkout");
+            }
+            List<CartItem> cart = GetCart();
+            decimal cartSubtotal = GetCartSubtotal(cart);
+            var discount = db.Discounts
+                    .FirstOrDefault(d => d.CouponCode == couponCode &&
+                    d.IsActive &&
+                    d.StartDate <= DateTime.Now &&
+                    d.EndDate >= DateTime.Now &&
+                    (d.MinimumOrderAmount == null || cartSubtotal >= d.MinimumOrderAmount)); // Check min amount
+            if (discount == null)
+            {
+                TempData["Error"] = "Mã giảm giá không hợp lệ hoặc đã hết hạn.";
+                Session["DiscountAmount"] = null;
+                Session["AppliedCoupon"] = null;
+                return RedirectToAction("Checkout");
+            }
+            decimal discountAmount = 0;
+            if (discount.DiscountType == "Percentage")// giam theo phan tram
+            {
+                discountAmount = cartSubtotal * (discount.DiscountValue / 100);
+                // ap dung gioi han giam gia toi da  neu co
+                if (discount.MaxDiscountAmount.HasValue && discountAmount > discount.MaxDiscountAmount.Value)
+                {
+                    discountAmount = discount.MaxDiscountAmount.Value;
+                }
+            }
+            else if (discount.DiscountType == "FixedAmount")// 50.000d
+            {
+                discountAmount = discount.DiscountValue;
+            }
+            // ko giam tien
+            discountAmount = Math.Min(discountAmount, cartSubtotal);
+            // luu thong tin giam gia vao session de su dung khi dat hang
+            Session["DiscountAmount"] = discountAmount;
+            Session["DiscountID"]= discount.DiscountID;
+            TempData["Success"] = $"Áp dụng mã {couponCode} thành công! Giảm: {discountAmount:N0} VNĐ. ";
+            return RedirectToAction("Checkout");
+
+
+        }
+
+
     }
 }

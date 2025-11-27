@@ -2,72 +2,128 @@
 @model List<DoAn_web.Models.CartItem>
 
 @{
-    ViewBag.Title = "Giỏ hàng";
-    Layout = "~/Views/Shared/_HomeLayout.cshtml"; // Đảm bảo dùng đúng Layout
+    ViewBag.Title = "Giỏ hàng của bạn";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
 <link href="~/Content/style_K/Style_GioHang.css" rel="stylesheet" />
 
 <div class="cart-container">
     <h2>Giỏ hàng của bạn</h2>
-    <hr />
 
-    @* Kiểm tra xem giỏ hàng có rỗng không (từ ViewBag) *@
-    @if (ViewBag.CartMessage != null)
+    @* HIỂN THỊ THÔNG BÁO LỖI NẾU CÓ *@
+    @if (TempData["Error"] != null)
     {
-        <div style="padding: 20px; background-color: #f0f0f0; text-align: center;">@ViewBag.CartMessage</div>
+        <div style="background-color: #fff3cd; color: #856404; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ffeeba;">
+            @TempData["Error"]
+        </div>
+    }
+
+    @* KIỂM TRA GIỎ HÀNG TRỐNG *@
+    @if (Model == null || Model.Count == 0)
+    {
+        <div style="text-align: center; padding: 50px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+
+            <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/9bdd8040b334d31946f49e36beaf32db.png" alt="Empty Cart" style="width: 100px; opacity: 0.5;">
+
+            <p style="font-size: 18px; color: #666; margin: 0;">Giỏ hàng của bạn đang trống.</p>
+
+            <a href="@Url.Action("Index", "Default")" class="checkout-btn" style="background: #333; text-decoration: none; display: inline-block; min-width: 200px;">
+                Tiếp tục mua sắm
+            </a>
+
+        </div>
     }
     else
     {
         decimal totalAmount = 0;
 
-        @* Lặp qua từng item trong Model (giỏ hàng) *@
         foreach (var item in Model)
         {
-            if (item != null) // Kiểm tra an toàn, tránh lỗi item bị null
+            if (item != null)
             {
                 totalAmount += item.TotalPrice;
+
+                // --- LOGIC TÍNH % GIẢM GIÁ ---
+                // Chỉ hiển thị giảm giá nếu Giá gốc > Giá bán hiện tại
+                bool isDiscounted = item.OriginalPrice > item.UnitPrice;
+                int percent = 0;
+                if (item.OriginalPrice > 0 && isDiscounted)
+                {
+                    percent = (int)((item.OriginalPrice - item.UnitPrice) / item.OriginalPrice * 100);
+                }
+                // -----------------------------
+
                 <div class="cart-item">
-                    <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" />
+                    <a href="@Url.Action("Details", "Product", new { id = item.ProductID })">
+                        <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" />
+                    </a>
+
                     <div class="cart-item-info">
-                        <h4>@item.ProductName</h4>
+                        <a href="@Url.Action("Details", "Product", new { id = item.ProductID })" style="text-decoration: none;">
+                            <h4>@item.ProductName</h4>
+                        </a>
+
+                        <div style="margin-bottom: 12px;">
+                            @if (isDiscounted)
+                            {
+                                @* Trường hợp có GIẢM GIÁ / FLASH SALE *@
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span style="color: #d70018; font-weight: bold; font-size: 16px;">
+                                        @String.Format("{0:N0}", item.UnitPrice) đ
+                                    </span>
+                                    <span style="text-decoration: line-through; color: #999; font-size: 13px;">
+                                        @String.Format("{0:N0}", item.OriginalPrice) đ
+                                    </span>
+                                    <span style="background: #ffd839; color: #d70018; padding: 1px 6px; border-radius: 3px; font-size: 11px; font-weight: bold;">
+                                        -@percent%
+                                    </span>
+                                </div>
+                            }
+                            else
+                            {
+                                @* Trường hợp GIÁ THƯỜNG *@
+                                <p style="margin: 0; color: #333; font-weight: 500;">
+                                    Đơn giá: @String.Format("{0:N0}", item.UnitPrice) đ
+                                </p>
+                            }
+                        </div>
 
                         <div class="cart-qty-wrapper">
                             <span class="cart-qty-label">Số lượng:</span>
-
                             <form action="@Url.Action("ChangeQuantity", "Cart")" method="post" class="cart-qty-form">
                                 @Html.Hidden("productID", item.ProductID)
 
                                 <button type="submit" name="change" value="-1" class="cart-qty-btn">−</button>
-
                                 <span class="cart-qty-display">@item.Quantity</span>
-
                                 <button type="submit" name="change" value="1" class="cart-qty-btn">+</button>
                             </form>
                         </div>
-
-                        <p>Đơn giá: @String.Format("{0:N0}", item.UnitPrice) đ</p>
                     </div>
+
                     <div class="cart-item-price">
                         <h5>@String.Format("{0:N0}", item.TotalPrice) đ</h5>
-                        @* Link "Xóa" gọi Action "RemoveFromCart" *@
+
                         <a href="@Url.Action("RemoveFromCart", "Cart", new { productID = item.ProductID })"
-                           style="color: #d70018; text-decoration: none;">Xóa</a>
+                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                            <i class="fa fa-trash"></i> Xóa
+                        </a>
                     </div>
                 </div>
             }
         }
 
-        @* Hiển thị tổng tiền *@
         <div class="cart-total">
-            Tổng cộng: @String.Format("{0:N0}", totalAmount) đ
+            Tổng thanh toán: <span style="color: #d70018;">@String.Format("{0:N0}", totalAmount) đ</span>
         </div>
 
-        <div style="text-align: right; margin-top: 20px;">
-           
-            @* Nó sẽ gọi Action "Checkout" trong "CartController" *@
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <a href="@Url.Action("Index", "Default")" style="color: #666; text-decoration: none; font-weight: 500;">
+                <i class="fa fa-arrow-left"></i> Tiếp tục mua hàng
+            </a>
+
             <a href="@Url.Action("Checkout", "Cart")" class="checkout-btn">
-                Tiến hành Thanh toán
+                MUA HÀNG NGAY
             </a>
         </div>
     }

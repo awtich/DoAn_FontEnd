@@ -158,6 +158,14 @@
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CustomerMetadata.cs" />
+    <Compile Include="Models\Discount.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DiscountMetadata.cs" />
+    <Compile Include="Models\DiscountPartial.cs" />
+    <Compile Include="Models\FlashSaleItem.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MyStore2026Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -266,6 +274,7 @@
     <Content Include="Content\js\js_banner.js" />
     <Content Include="Content\js\Js_Cart.js" />
     <Content Include="Content\js\js_Confirm.js" />
+    <Content Include="Content\js\js_FlashSale.js" />
     <Content Include="Content\js\Js_HomeLayout.js" />
     <Content Include="Content\js\js_login.js" />
     <Content Include="Content\js\Js_OrderHistory.js" />
@@ -279,6 +288,7 @@
     <Content Include="Content\style_K\Style_Confirm.css" />
     <Content Include="Content\style_K\Style_DangKi.css" />
     <Content Include="Content\style_K\Style_DichVu.css" />
+    <Content Include="Content\style_K\Style_FlashSale.css" />
     <Content Include="Content\style_K\Style_GioHang.css" />
     <Content Include="Content\style_K\Style_home.css" />
     <Content Include="Content\style_K\Style_Layout.css" />

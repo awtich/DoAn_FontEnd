@@ -6,17 +6,46 @@ using System.Web.Mvc;
 using DoAn_web.Models;
 using DoAn_web.ViewModels;
 using System.Data.Entity;
+using System.Web.UI.WebControls.WebParts;
 
 namespace DoAn_web.Controllers
 {
     public class DefaultController : Controller
     {
         // GET: Default
-        //Con CHó kiệt
+      
          private MyStore2026Entities db = new MyStore2026Entities();
+        private void LoadFlashSalesToViewBag()
+        {
+           var now = DateTime.Now;  
+            // lay cac danh sach Flashsale dang chay
+            var activeFlashSales = db.FlashSaleItems
+                                     .Where(f=> f.IsActive && f.StartDate<=now && f.EndDate>=now)
+                                     .OrderBy(f=>f.EndDate)  /*lay cai het  han lam moc*/
+                                     .ToList();
+             // lay thong tin chi tiet cua sp FlashSale
+             var flashsaleProducts =( from f in activeFlashSales
+                                      join p in db.Products on f.ProductID equals p.ProductID
+                                      select new Product
+                                      {
+                                          ProductID=p.ProductID,
+                                          ProductName =p.ProductName,
+                                          ProductImage =p.ProductImage,
+                                          ProductPrice =p.ProductPrice,
+                                          
+                                      }).ToList();
+            ViewBag.FlashSaleProducts = flashsaleProducts;// hien tho list sp
+            ViewBag.FlashSales =  activeFlashSales;// hien thi gia
+            if(activeFlashSales.Count>0)
+            {
+                ViewBag.FlashSalesEndTime = activeFlashSales.First().EndDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+            }
+        }
 
         public ActionResult Index()
         {
+            LoadFlashSalesToViewBag();
            // tao cai hop cho ViewModel
            var viewModel = new HomeViewModel();
 
@@ -68,6 +97,7 @@ namespace DoAn_web.Controllers
 
         public ActionResult TrangIphone()
         {
+           
             //  Lọc database:
             // CHỈ lấy các sản phẩm có CategoryName == "iPhone"
             var iphones = db.Products
@@ -82,7 +112,7 @@ namespace DoAn_web.Controllers
         private int GetCurrentCustomerID()
         {
             var username = User.Identity.Name;
-            // Thay tên DbContext bằng tên của bạn
+           
             using (var db = new MyStore2026Entities())
             {
                 var customer = db.Customers.FirstOrDefault(c => c.Username == username);
@@ -104,7 +134,7 @@ namespace DoAn_web.Controllers
             int customerId = GetCurrentCustomerID();
             //Truy vấn db tìm cái đầu tiên nếu k thì trả về null
             var order = db.Orders.FirstOrDefault(o => o.OrderID == id && o.CustomerID == customerId);
-            if (order != null && ((order.PaymentStatus == "Chờ xác nhận chuyển khoản" ||
+            if (order != null && ((order.PaymentStatus == "Chờ xác nhận chuyển khoản" || order.PaymentStatus == "Chờ xác nhận chuyển khoảng" ||
                                                     order.PaymentStatus == "Chờ xử lý" ||
                                                     order.PaymentStatus == "Chưa thanh toán")) && order.ShippingStatus != "Đang vận chuyển" && order.ShippingStatus != "Đã giao thành công")
             {
@@ -131,6 +161,7 @@ namespace DoAn_web.Controllers
 
         public ActionResult TrangMac()
         {
+            LoadFlashSalesToViewBag();
             var Mac = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "Mac")
@@ -142,6 +173,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult TrangWatch()
         {
+            
             var Watch = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "Watch")
@@ -153,6 +185,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult TrangIpad()
         {
+           
             var Ipads = db.Products
                            .Include(p => p.Category)
                            .Where(p => p.Category.CategoryName == "ipad")
@@ -168,6 +201,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult TrangCamera()
         {
+            
             var Camera = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "Camera")
@@ -183,6 +217,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult PhuKien()
         {
+            LoadFlashSalesToViewBag();
             var PhuKien = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "PhuKien")
@@ -194,6 +229,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult AmThanh()
         {
+            LoadFlashSalesToViewBag();
             var AmThanh = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "AmThanh")
@@ -205,6 +241,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult Camera()
         {
+            LoadFlashSalesToViewBag();
             var Camera = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "Camera")
@@ -216,6 +253,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult GiaDung()
         {
+            LoadFlashSalesToViewBag();
             var GiaDung = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "GiaDung")
@@ -227,6 +265,7 @@ namespace DoAn_web.Controllers
         }
         public ActionResult MayLuot()
         {
+            LoadFlashSalesToViewBag();
             var MayLuot = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "MayLuot")
