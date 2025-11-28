@@ -183,6 +183,12 @@ display: flex;
 /* === FOOTER (Chung) === */
 .main-footer {
     width: 100%;
+    background-color: #ffffff;
+}
+.footer-dark-area {
+    width: 100%;
+    background-color: #141924;
+    color: #fff;
 }
 
 .footer-info-section {
@@ -194,6 +200,12 @@ display: flex;
     padding: 0 20px;
     flex-wrap: wrap;
     gap: 5px;
+}
+.footer-banner img {
+    display: block;
+    max-width: 1200px;
+    width: 80%;
+    margin: 0 auto 20px;
 }
 
 .info-card {
@@ -244,19 +256,26 @@ display: flex;
 .footer-dark-area {
     background-color: #131a22;
     color: white;
-    padding: 40px 60px 20px;
-    font-size: 13px;
+    padding: 40px 0 20px;
+}
+.footer-top,
+.footer-bottom {
+    max-width: 1200px; /* thu nhỏ nội dung lại */
+    margin: 0 auto; /* căn giữa */
+    padding: 0 20px; /* đệm 2 bên */
 }
 
 /* === FOOTER (Sửa lỗi co giãn) === */
 .footer-top {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 10px;
+    box-sizing: border-box;
     display: grid;
-    /* SỬA: từ 350px (cố định) sang 1fr (linh hoạt) */
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
-    text-align: center;
-    justify-content: center;
-    background-color: #141924;
+    text-align: left;
+    background: transparent; /* QUAN TRỌNG: không đổ màu ở đây nữa */
 }
 /* ================================== */
 
@@ -270,12 +289,15 @@ display: flex;
 }
 
 .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px 20px;
+    box-sizing: border-box;
     text-align: center;
     font-size: 12px;
-    color: white;
-    white-space: pre-line;
     line-height: 1.6;
-    background-color: #141924;
+    white-space: pre-line;
+    background: transparent; /* để lộ nền của .footer-dark-area */
 }
 
 /* === PHẦN RESPONSIVE (ĐÃ SỬA HOÀN CHỈNH) === */
@@ -392,6 +414,24 @@ display: flex;
         .info-card h3 {
             font-size: 1.3rem;
         }
+    .category-section .row {
+        /* Đảm bảo các cột có thể xuống dòng đúng */
+        display: block;
+        overflow: hidden; /* tránh lỗi tràn float */
+    }
+
+    .category-section .col-md-3 {
+        width: 50%; /* 2 cột = 50% */
+        float: left; /* cho nó đứng cạnh nhau */
+        padding-left: 8px;
+        padding-right: 8px;
+        box-sizing: border-box;
+    }
+
+    /* Card bên trong tự full theo cột 50% */
+    .category-section .home-product-card {
+        width: 100%;
+    }
 }
 
 /* Hiệu ứng mở menu (Giữ nguyên) */
