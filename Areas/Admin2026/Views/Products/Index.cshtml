@@ -120,7 +120,7 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        width: 220px;
+        min-width: 300px;
         white-space: nowrap;
     }
 
@@ -177,13 +177,13 @@
     <table style="width: 100%; border-collapse: collapse;">
         <thead style="background-color: #343a40; color: white;">
             <tr>
-                <th style="padding: 10px;">Ảnh</th>
+                <th style="padding: 10px; ">Ảnh</th>
                 <th style="padding: 10px;">Tên sản phẩm</th>
                 <th style="padding: 10px;" class="product-description-cell">Mô tả</th>
                 <th style="padding: 10px;">Giá bán</th>
-                <th style="padding: 10px;">Tồn kho</th>
-                <th style="padding: 10px;">Đã bán</th>
-                <th style="padding: 10px;">Danh mục</th>
+                <th style="padding: 10px; white-space: nowrap">Tồn kho</th>
+                <th style="padding: 10px; white-space: nowrap">Đã bán</th>
+                <th style="padding: 10px; white-space: nowrap">Danh mục</th>
                 <th style="padding: 10px;" class="action-buttons-cell">Hành động</th>
             </tr>
         </thead>
@@ -212,6 +212,9 @@
                     <td style="padding: 10px;">@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
 
                     <td class="action-buttons-cell">
+                        <a href="@Url.Action("Index", "ProductDetail", new { id = item.ProductID })" class="btn btn-info btn-sm">
+                            <i class="fa fa-cog"></i> Cấu hình
+                        </a>
                         @Html.ActionLink("Sửa", "Edit", new { id = item.ProductID }, new { style = "background-color: #f0ad4e; color: white; padding: 5px 10px; border-radius: 4px;" })
                         @Html.ActionLink("Chi tiết", "Details", new { id = item.ProductID }, new { style = "background-color: #5bc0de; color: white; padding: 5px 10px; border-radius: 4px;" })
 
@@ -222,7 +225,7 @@
                         else
                         {
                             <button type="button" disabled style="background-color: #ccc; color: #666; padding: 5px 10px; border-radius: 4px; border: none; cursor: not-allowed; font-size: 14px;">
-                                Xóa 
+                                Xóa
                             </button>
                         }
                     </td>

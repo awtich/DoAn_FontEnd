@@ -141,6 +141,7 @@
     <Compile Include="Areas\Admin2026\Controllers\CustomersController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\OrdersController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\ProductDetailController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\ProductsController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\UsersController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -152,6 +153,9 @@
     </Compile>
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Category.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Color.cs">
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Customer.cs">
@@ -190,7 +194,10 @@
     <Compile Include="Models\Product.cs">
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sysdiagram.cs">
+    <Compile Include="Models\ProductDetail.cs">
+      <DependentUpon>MyStore2026Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Storage.cs">
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
@@ -353,6 +360,7 @@
     <Content Include="Areas\Admin2026\Views\Orders\Details.cshtml" />
     <Content Include="Areas\Admin2026\Views\Orders\Edit.cshtml" />
     <Content Include="Areas\Admin2026\Views\Orders\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\ProductDetail\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
