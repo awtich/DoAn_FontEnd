@@ -38,8 +38,12 @@ namespace DoAn_web.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-           // dung id de tim sp trong database
-            Product product = db.Products.Find(id);
+            // dung id de tim sp trong database
+            var product = db.Products
+                    .Include("Category")  // liên kết danh mục
+                    .Include("Color")     //  Lấy bảng Màu
+                    .Include("Storage")   // Lấy bảng GB
+                    .FirstOrDefault(p => p.ProductID == id);
 
             // neu ko tim thay thi bao loi
             if (product == null) 

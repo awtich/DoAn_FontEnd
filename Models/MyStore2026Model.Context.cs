@@ -29,10 +29,12 @@ namespace DoAn_web.Models
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
-        public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Discount> Discounts { get; set; }
         public virtual DbSet<FlashSaleItem> FlashSaleItems { get; set; }
+        public virtual DbSet<Color> Colors { get; set; }
+        public virtual DbSet<Storage> Storages { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<ProductDetail> ProductDetails { get; set; }
     }
 }

@@ -193,6 +193,35 @@ namespace DoAn_web.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public ActionResult ChangeQuantityAjax(int productID, int change)
+        {
+            var cart = Session["Cart"] as List<CartItem>;
+            if (cart == null)
+                return Json(new { success = false, message = "Giỏ hàng trống" },
+                            JsonRequestBehavior.AllowGet);
+
+            var item = cart.FirstOrDefault(x => x.ProductID == productID);
+            if (item == null)
+                return Json(new { success = false, message = "Không tìm thấy sản phẩm" },
+                            JsonRequestBehavior.AllowGet);
+
+            item.Quantity += change;
+            if (item.Quantity < 1)
+                item.Quantity = 1;
+
+            decimal cartTotal = cart.Sum(x => x.TotalPrice);
+
+            return Json(new
+            {
+                success = true,
+                productID = productID,
+                quantity = item.Quantity,
+                itemTotal = item.TotalPrice,
+                cartTotal = cartTotal
+            }, JsonRequestBehavior.AllowGet);
+        }
+
 
 
         // Dọn dẹp DbContext
