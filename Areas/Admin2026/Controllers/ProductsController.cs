@@ -19,7 +19,8 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         // GET: Admin2026/Products
         public ActionResult Index(string searchString, decimal? minPrice, decimal? maxPrice, int? page)
         {
-            var products = db.Products.Include(p => p.Category).AsQueryable();
+            var products = db.Products.Include(p => p.Category).Include(p => p.Color).Include(p => p.Storage).AsQueryable();
+
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -66,6 +67,9 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         public ActionResult Create()
         {
             ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName");
+            ViewBag.ColorID = new SelectList(db.Colors, "ColorID", "ColorName");
+            ViewBag.StorageID = new SelectList(db.Storages, "StorageID", "StorageName");
+
             return View();
         }
 
@@ -73,7 +77,7 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // Thêm Quantity vào Bind để cho phép nhập số lượng ban đầu
-        public ActionResult Create([Bind(Include = "ProductID,ProductName,ProductDecription,ProductPrice,CategoryID,Quantity")] Product product, HttpPostedFileBase ImageFile)
+        public ActionResult Create([Bind(Include = "ProductID,ProductName,ProductDecription,ProductPrice,CategoryID,Quantity,ColorID,StorageID")] Product product, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
@@ -119,6 +123,8 @@ namespace DoAn_web.Areas.Admin2026.Controllers
             }
 
             ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+            ViewBag.ColorID = new SelectList(db.Colors, "ColorID", "ColorName", product.ColorID);
+            ViewBag.StorageID = new SelectList(db.Storages, "StorageID", "StorageName", product.StorageID);
             return View(product);
         }
 
@@ -130,6 +136,8 @@ namespace DoAn_web.Areas.Admin2026.Controllers
             if (product == null) return HttpNotFound();
 
             ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+             ViewBag.ColorID = new SelectList(db.Colors, "ColorID", "ColorName", product.ColorID);
+            ViewBag.StorageID = new SelectList(db.Storages, "StorageID", "StorageName", product.StorageID);
             return View(product);
         }
 
@@ -137,7 +145,7 @@ namespace DoAn_web.Areas.Admin2026.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // Thêm tham số ImageFile để cho phép sửa ảnh
-        public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDecription,ProductPrice,ProductImage,Quantity,SoldQuantity")] Product product, HttpPostedFileBase ImageFile)
+        public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDecription,ProductPrice,ProductImage,Quantity,SoldQuantity,ColorID,StorageID")] Product product, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
@@ -179,6 +187,8 @@ namespace DoAn_web.Areas.Admin2026.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+            ViewBag.ColorID = new SelectList(db.Colors, "ColorID", "ColorName", product.ColorID);
+            ViewBag.StorageID = new SelectList(db.Storages, "StorageID", "StorageName", product.StorageID);
             return View(product);
         }
 

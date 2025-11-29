@@ -17,8 +17,9 @@ namespace DoAn_web.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Product()
         {
-            this.OrderDetails = new HashSet<OrderDetail>();
             this.FlashSaleItems = new HashSet<FlashSaleItem>();
+            this.OrderDetails = new HashSet<OrderDetail>();
+            this.ProductDetails = new HashSet<ProductDetail>();
         }
     
         public int ProductID { get; set; }
@@ -30,11 +31,17 @@ namespace DoAn_web.Models
         public int Quantity { get; set; }
         public int SoldQuantity { get; set; }
         public Nullable<decimal> OldPrice { get; set; }
+        public Nullable<int> StorageID { get; set; }
+        public Nullable<int> ColorID { get; set; }
     
         public virtual Category Category { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual Color Color { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FlashSaleItem> FlashSaleItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual Storage Storage { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProductDetail> ProductDetails { get; set; }
     }
 }
