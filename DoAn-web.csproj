@@ -139,6 +139,7 @@
     <Compile Include="Areas\Admin2026\Admin2026AreaRegistration.cs" />
     <Compile Include="Areas\Admin2026\Controllers\CategoriesController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\CustomersController.cs" />
+    <Compile Include="Areas\Admin2026\Controllers\FlashSaleController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\OrdersController.cs" />
     <Compile Include="Areas\Admin2026\Controllers\ProductsController.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
+    <Compile Include="Controllers\DiscountController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -166,6 +168,7 @@
     <Compile Include="Models\FlashSaleItem.cs">
       <DependentUpon>MyStore2026Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\FlashSaleItemMetadata.cs" />
     <Compile Include="Models\MyStore2026Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -353,6 +356,9 @@
     <Content Include="Areas\Admin2026\Views\Orders\Details.cshtml" />
     <Content Include="Areas\Admin2026\Views\Orders\Edit.cshtml" />
     <Content Include="Areas\Admin2026\Views\Orders\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\FlashSale\Index.cshtml" />
+    <Content Include="Areas\Admin2026\Views\FlashSale\Create.cshtml" />
+    <Content Include="Areas\Admin2026\Views\FlashSale\Edit.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -421,6 +427,9 @@
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Cart\Checkout.cshtml" />
     <Content Include="Views\Cart\OrderConfirmation.cshtml" />
+    <Content Include="Views\Discount\Index.cshtml" />
+    <Content Include="Views\Discount\Create.cshtml" />
+    <Content Include="Views\Discount\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

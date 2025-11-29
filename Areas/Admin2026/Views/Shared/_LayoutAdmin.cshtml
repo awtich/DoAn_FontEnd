@@ -33,6 +33,19 @@
                     <i class="bi bi-receipt"></i> Quản lý Đơn hàng
                 </a>
             </li>
+            
+            @* --- [MỚI] THÊM 2 MỤC NÀY VÀO ĐÂY --- *@
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "FlashSale", new { area = "Admin2026" })">
+                    <i class="bi bi-lightning-charge-fill"></i> Quản lý Flash Sale
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Discount", new { area = "Admin2026" })">
+                    <i class="bi bi-ticket-perforated-fill"></i> Quản lý Mã giảm giá
+                </a>
+            </li>
+            @* --------------------------------------- *@
 
             <li class="sidebar-divider">Kho hàng</li>
             <li class="nav-item">

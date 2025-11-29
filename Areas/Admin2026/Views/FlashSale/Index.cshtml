@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewBag.Title = "Quản lý Flash Sale";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách Flash Sale</h2>
+
+<p>
+    <a href="@Url.Action("Create")" class="btn btn-primary">Tạo mới Flash Sale</a>
+</p>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Hình ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá gốc</th>
+            <th>Giá Sale</th>
+            <th>Thời gian</th>
+            <th>Tiến độ bán</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            // Tính % giảm giá để hiển thị chơi cho đẹp
+            var discount = (int)((item.Product.ProductPrice - item.SalePrice) / item.Product.ProductPrice * 100);
+            // Tính % tiến độ
+            var progress = (item.SaleQuantityLimit > 0) ? (item.SoldQuantity * 100 / item.SaleQuantityLimit) : 0;
+
+            <tr>
+                <td>
+                    <img src="@Url.Content(item.Product.ProductImage)" style="width: 50px; height: 50px; object-fit: cover;" />
+                </td>
+                <td>
+                    <b>@item.Product.ProductName</b>
+                </td>
+                <td style="text-decoration: line-through; color: gray;">
+                    @String.Format("{0:N0} đ", item.Product.ProductPrice)
+                </td>
+                <td style="color: red; font-weight: bold;">
+                    @String.Format("{0:N0} đ", item.SalePrice)
+                    <span class="badge badge-danger" style="color:red;">-@discount%</span>
+                </td>
+                <td>
+                    <small>Từ: @item.StartDate.ToString("dd/MM/yyyy HH:mm")</small><br />
+                    <small>Đến: @item.EndDate.ToString("dd/MM/yyyy HH:mm")</small>
+                </td>
+                <td style="width: 150px;">
+                    <small>Đã bán: @item.SoldQuantity / @item.SaleQuantityLimit</small>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @progress%;" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </td>
+                <td>
+                    @if (item.IsActive && item.EndDate >= DateTime.Now && item.StartDate <= DateTime.Now)
+                    {
+                        <span class="label label-success" style="background:green; padding:3px; color:white;">Đang chạy</span>
+                    }
+                    else if (item.IsActive && item.StartDate > DateTime.Now)
+                    {
+                        <span class="label label-warning" style="background:orange; padding:3px; color:white;">Sắp chạy</span>
+                    }
+                    else
+                    {
+                        <span class="label label-default" style="background:gray; padding:3px; color:white;">Kết thúc/Tắt</span>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Sửa", "Edit", new { id = item.FlashSaleItemID }, new { @class = "btn btn-sm btn-warning" })
+                    @Html.ActionLink("Xóa", "Delete", new { id = item.FlashSaleItemID }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Bạn có chắc muốn xóa?');" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

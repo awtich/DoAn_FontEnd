@@ -56,7 +56,7 @@
                     <span class="nav-item-text" style="color: white; padding-right: 15px;">Chào, @User.Identity.Name!</span>
                 </div>
 
-                @* 🔥 SỬA Ở ĐÂY: Thêm dấu @ *@
+                @*  SỬA Ở ĐÂY: Thêm dấu @ *@
                 if (User.IsInRole("A"))
                 {
                     @* neu la Admin  *@
@@ -127,6 +127,7 @@
 
     <nav class="subnav" id="subnav">
         <ul>
+            <li><a href="/Default/Index">Trang chủ </a></li>
             <li><a href="/Default/TrangIphone">iPhone</a></li>
             <li><a href="/Default/TrangIpad">iPad</a></li>
             <li><a href="/Default/TrangMac">Mac</a></li>
@@ -136,7 +137,6 @@
             <li><a href="/Default/Camera">Camera</a></li>
             <li><a href="/Default/GiaDung">Gia dụng</a></li>
             <li><a href="/Default/MayLuot">Máy lướt</a></li>
-            <li><a href="/Default/TinTuc">Tin tức</a></li>
             <li><a href="/Default/DichVu">Dịch vụ</a></li>
         </ul>
     </nav>

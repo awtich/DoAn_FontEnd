@@ -1,0 +1,125 @@
+﻿@model IEnumerable<DoAn_web.Models.Discount>
+
+@{
+    ViewBag.Title = "Quản lý Mã giảm giá";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách Mã giảm giá</h2>
+
+<p>
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        Tạo mã mới
+    </a>
+</p>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Mã Coupon</th>
+            <th>Tên chương trình</th>
+            <th>Loại giảm</th>
+            <th>Giá trị giảm</th>
+            <th>Đơn tối thiểu</th>
+            <th>Thời gian</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                // 1. Xử lý màu Trạng Thái (Đậm đà, dễ đọc)
+                bool isExpired = item.EndDate < DateTime.Now;
+                string statusBadge = "badge-success";
+                string statusText = "Đang chạy";
+
+                if (!item.IsActive)
+                {
+                    // Màu xám đậm cho trạng thái Tắt
+                    statusBadge = "badge-secondary";
+                    statusText = "Đã tắt";
+                }
+                else if (isExpired)
+                {
+                    // Màu đỏ cho Hết hạn
+                    statusBadge = "badge-danger";
+                    statusText = "Hết hạn";
+                }
+                else if (item.StartDate > DateTime.Now)
+                {
+                    // Màu vàng + Chữ đen (text-dark) -> Dễ nhìn hơn chữ trắng
+                    statusBadge = "badge-warning text-dark";
+                    statusText = "Sắp chạy";
+                }
+
+                <tr>
+                    @* Mã Coupon màu xanh đậm *@
+                    <td style="font-weight:bold; color:#0056b3;">
+                        @item.CouponCode
+                    </td>
+
+                    <td>@item.DiscountName</td>
+
+                    @* 2. Xử lý màu Loại Giảm (Đổi màu khác cho nổi) *@
+                    <td >
+                        @if (item.DiscountType == "Percentage")
+                        {
+                            // Dùng màu Đen cho % để khác biệt hoàn toàn
+                            <span class="badge badge-dark" style="color:red">Phần trăm (%)</span>
+                        }
+                        else
+                        {
+                            // Dùng màu Xanh đậm cho Tiền
+                            <span class="badge badge-primary" style="color:red">Tiền mặt (VNĐ)</span>
+                        }
+                    </td>
+
+                    <td style="color:red; font-weight:bold;">
+                        @if (item.DiscountType == "Percentage")
+                        {
+                            <span>-@String.Format("{0:0}", item.DiscountValue)%</span>
+                        }
+                        else
+                        {
+                            <span>-@String.Format("{0:N0} đ", item.DiscountValue)</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (item.MinimumOrderAmount > 0)
+                        {
+                            @String.Format("{0:N0} đ", item.MinimumOrderAmount)
+                        }
+                        else
+                        {
+                            <span>0 đ</span>
+                        }
+                    </td>
+
+                    <td>
+                        <small>Từ: @item.StartDate.ToString("dd/MM/yyyy")</small><br />
+                        <small>Đến: @item.EndDate.ToString("dd/MM/yyyy")</small>
+                    </td>
+
+                    <td class="text-center">
+                        <span class="badge @statusBadge" style="color:red" >@statusText</span>
+                    </td>
+
+                    <td>
+                        @Html.ActionLink("Sửa", "Edit", new { id = item.DiscountID }, new { @class = "btn btn-sm btn-warning" })
+                        @Html.ActionLink("Xóa", "Delete", new { id = item.DiscountID }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Bạn chắc chắn muốn xóa mã này?');" })
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" class="text-center">Chưa có mã giảm giá nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>

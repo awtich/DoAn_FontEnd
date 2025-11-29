@@ -1,0 +1,110 @@
+﻿@model DoAn_web.Models.Discount
+
+@{
+    ViewBag.Title = "Tạo Mã giảm giá";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Thêm Mã giảm giá mới</h6>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            }
+
+            <div class="form-horizontal">
+
+                @* 1. Mã Coupon & Tên *@
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Mã Coupon (Code)</label>
+                        @Html.EditorFor(model => model.CouponCode, new { htmlAttributes = new { @class = "form-control text-uppercase font-weight-bold", @placeholder = "VD: TET2025" } })
+                        <small class="text-muted">Mã khách hàng sẽ nhập (Tự động viết hoa).</small>
+                        @Html.ValidationMessageFor(model => model.CouponCode, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Tên chương trình</label>
+                        @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control", @placeholder = "VD: Khuyến mãi Tết" } })
+                        @Html.ValidationMessageFor(model => model.DiscountName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 2. Loại giảm & Giá trị (Có Script đổi đơn vị) *@
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Loại giảm giá</label>
+                        <select class="form-control" id="DiscountType" name="DiscountType">
+                            <option value="FixedAmount">Giảm theo Tiền mặt (VNĐ)</option>
+                            <option value="Percentage">Giảm theo Phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Giá trị giảm</label>
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.DiscountValue, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "1", @id = "DiscountValue" } })
+                            <div class="input-group-append">
+                                <span class="input-group-text font-weight-bold" id="unit-label">VNĐ</span>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.DiscountValue, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 3. Điều kiện & Thời gian *@
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Đơn tối thiểu</label>
+                        @Html.EditorFor(model => model.MinimumOrderAmount, new { htmlAttributes = new { @class = "form-control", @type = "number", @Value = "0" } })
+                        <small class="text-muted">Nhập 0 nếu không yêu cầu.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Ngày bắt đầu</label>
+                        @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local" })
+                        @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Ngày kết thúc</label>
+                        @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local" })
+                        @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 4. Kích hoạt *@
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        @Html.CheckBoxFor(model => model.IsActive, new { @class = "custom-control-input", @id = "isActive" })
+                        <label class="custom-control-label font-weight-bold text-success" for="isActive">Kích hoạt ngay</label>
+                    </div>
+                </div>
+
+                <hr />
+                <button type="submit" class="btn btn-success">Lưu mã giảm giá</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        }
+    </div>
+</div>
+
+@* SCRIPT ĐỔI ĐƠN VỊ TÍNH *@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#DiscountType').change(function () {
+            var type = $(this).val();
+            if (type === 'Percentage') {
+                $('#unit-label').text('%'); // Đổi chữ VNĐ thành %
+                $('#DiscountValue').attr('max', '100'); // Chặn nhập quá 100
+            } else {
+                $('#unit-label').text('VNĐ');
+                $('#DiscountValue').removeAttr('max');
+            }
+        });
+    });
+</script>

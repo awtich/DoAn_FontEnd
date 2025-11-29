@@ -1,0 +1,110 @@
+﻿@model DoAn_web.Models.Discount
+
+@{
+    ViewBag.Title = "Cập nhật Mã giảm giá";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Cập nhật: @Model.CouponCode</h6>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.DiscountID) @* Giữ ID *@
+
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            }
+
+            <div class="form-horizontal">
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Mã Coupon</label>
+                        @Html.EditorFor(model => model.CouponCode, new { htmlAttributes = new { @class = "form-control text-uppercase font-weight-bold" } })
+                        @Html.ValidationMessageFor(model => model.CouponCode, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Tên chương trình</label>
+                        @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Loại giảm giá</label>
+                        @* Tạo dropdown bằng tay để dễ xử lý selected *@
+                        <select class="form-control" id="DiscountType" name="DiscountType">
+                            <option value="FixedAmount" @(Model.DiscountType == "FixedAmount" ? "selected" : "")>Giảm theo Tiền mặt (VNĐ)</option>
+                            <option value="Percentage" @(Model.DiscountType == "Percentage" ? "selected" : "")>Giảm theo Phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Giá trị giảm</label>
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.DiscountValue, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "1", @id = "DiscountValue" } })
+                            <div class="input-group-append">
+                                <span class="input-group-text font-weight-bold" id="unit-label">VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Đơn tối thiểu</label>
+                        @Html.EditorFor(model => model.MinimumOrderAmount, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Ngày bắt đầu</label>
+                        @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local" })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Ngày kết thúc</label>
+                        @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        @Html.CheckBoxFor(model => model.IsActive, new { @class = "custom-control-input", @id = "isActive" })
+                        <label class="custom-control-label font-weight-bold text-primary" for="isActive">Đang hoạt động</label>
+                    </div>
+                </div>
+
+                <hr />
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        }
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Hàm đổi đơn vị
+        function updateUnit() {
+            var type = $('#DiscountType').val();
+            if (type === 'Percentage') {
+                $('#unit-label').text('%');
+                $('#DiscountValue').attr('max', '100');
+            } else {
+                $('#unit-label').text('VNĐ');
+                $('#DiscountValue').removeAttr('max');
+            }
+        }
+
+        // Gọi hàm ngay khi vào trang để hiển thị đúng đơn vị cũ
+        updateUnit();
+
+        // Gọi hàm khi người dùng thay đổi dropdown
+        $('#DiscountType').change(function () {
+            updateUnit();
+        });
+    });
+</script>

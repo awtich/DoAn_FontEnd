@@ -1,0 +1,132 @@
+﻿@model DoAn_web.Models.FlashSaleItem
+@{
+    ViewBag.Title = "Tạo Flash Sale";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+    var productList = ViewBag.ProductList as IEnumerable<dynamic>;
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Tạo chương trình Flash Sale</h6>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @* Bảng báo lỗi từ Controller sẽ hiện ở đây *@
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            }
+
+            <div class="form-horizontal">
+
+                @* 1. SẢN PHẨM *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Sản phẩm</label>
+                    <div class="col-md-8">
+                        <select id="ProductID" name="ProductID" class="form-control" required>
+                            <option value="">-- Chọn sản phẩm --</option>
+                            @if (productList != null)
+                            {
+                                foreach (var item in productList)
+                                {
+                                    @* LOGIC GIỮ LẠI GIÁ TRỊ:
+                                     So sánh ID của sản phẩm trong vòng lặp (item.ProductID)
+                                    với ID mà người dùng vừa gửi lên (Model.ProductID).
+                                        Nếu khớp -> Thêm chữ "selected"
+                                    *@
+
+                                    <option value="@item.ProductID"
+                                            data-price="@Convert.ToInt64(item.ProductPrice)"
+                                            @(Model != null && item.ProductID == Model.ProductID ? "selected" : "")>
+                                        @item.ProductName
+                                    </option>
+                                }
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.ProductID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 2. GIÁ GỐC (Chỉ để xem) *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Giá gốc</label>
+                    <div class="col-md-8">
+                        <input type="text" id="DisplayOriginalPrice" class="form-control font-weight-bold" readonly value="0 đ" style="background-color: #eaecf4;" />
+                    </div>
+                </div>
+
+                @* 3. GIÁ SALE *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Giá Sale</label>
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.SalePrice, new { @class = "form-control", @type = "number", @min = "1" })
+                        @Html.ValidationMessageFor(model => model.SalePrice, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 4. SỐ LƯỢNG *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Số lượng</label>
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.SaleQuantityLimit, new { @class = "form-control", @type = "number", @min = "1" })
+                        @Html.ValidationMessageFor(model => model.SaleQuantityLimit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 5. THỜI GIAN *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Thời gian</label>
+                    <div class="col-md-4">
+                        <label class="small">Bắt đầu</label>
+                        @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="small">Kết thúc</label>
+                        @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="custom-control custom-checkbox">
+                            @Html.CheckBoxFor(model => model.IsActive, new { @class = "custom-control-input", @id = "activeCheck" })
+                            <label class="custom-control-label" for="activeCheck">Kích hoạt ngay</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                @* NÚT LƯU THUẦN TÚY - KHÔNG CÓ ID ĐỂ TRÁNH JS CAN THIỆP *@
+                <button type="submit" class="btn btn-success">Lưu Flash Sale</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        }
+    </div>
+</div>
+
+@* SCRIPT NÀY CHỈ ĐỂ HIỆN GIÁ GỐC CHO ĐẸP - KHÔNG CAN THIỆP VÀO VIỆC LƯU *@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#ProductID').change(function () {
+            var selected = $(this).find('option:selected');
+            var price = selected.attr('data-price');
+
+            if (price) {
+                var formatted = new Intl.NumberFormat('vi-VN').format(price);
+                $('#DisplayOriginalPrice').val(formatted + " đ");
+            } else {
+                $('#DisplayOriginalPrice').val("0 đ");
+            }
+            if ($('#ProductID').val()) {
+            $('#ProductID').trigger('change');
+        }
+        });
+    });
+</script>

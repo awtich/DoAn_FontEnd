@@ -1,0 +1,112 @@
+﻿@model DoAn_web.Models.FlashSaleItem
+@{
+    ViewBag.Title = "Cập nhật Flash Sale";
+    Layout = "~/Areas/Admin2026/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Cập nhật chương trình Flash Sale</h6>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @* Giữ nguyên ID để cập nhật *@
+            @Html.HiddenFor(model => model.FlashSaleItemID)
+            @Html.HiddenFor(model => model.SoldQuantity)
+            @Html.HiddenFor(model => model.ProductID)
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                @* 1. HIỂN THỊ TÊN SẢN PHẨM (KHÔNG CHO SỬA) *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Sản phẩm</label>
+                    <div class="col-md-6">
+                        @* Hiển thị tên sản phẩm dạng readonly *@
+                        <input type="text" class="form-control" value="@Model.Product.ProductName" readonly style="background-color: #f8f9fa;" />
+                        <small class="text-muted">Bạn không thể đổi sản phẩm khi đang chỉnh sửa.</small>
+                    </div>
+                </div>
+
+                @* 2. HIỂN THỊ GIÁ GỐC (TỰ TÍNH TOÁN) *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Giá gốc</label>
+                    <div class="col-md-6">
+                        @* Format giá gốc ra dạng tiền việt *@
+                        <input type="text" class="form-control" value="@String.Format("{0:0,0} đ", Model.Product.ProductPrice)" readonly style="background-color: #e9ecef; font-weight:bold; color:#333;" />
+                    </div>
+                </div>
+
+                @* 3. SỬA GIÁ SALE *@
+            <div class="form-group row">
+                @Html.LabelFor(model => model.SalePrice, "Giá Sale (VNĐ)", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-6">
+                    @* Dùng TextBoxFor và ép Value về Int64 để bỏ hết dấu chấm phẩy thừa *@
+                    @Html.TextBoxFor(model => model.SalePrice, new
+                    {
+                        @class = "form-control",
+                        @type = "number",
+                        @min = "1",
+                        @Value = Convert.ToInt64(Model.SalePrice)
+                    })
+                    @Html.ValidationMessageFor(model => model.SalePrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+                @* 4. SỬA SỐ LƯỢNG *@
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.SaleQuantityLimit, "Số lượng giới hạn", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.SaleQuantityLimit, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "1" } })
+                        <small>Đã bán: <b>@Model.SoldQuantity</b> sản phẩm</small>
+                        @Html.ValidationMessageFor(model => model.SaleQuantityLimit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 5. SỬA NGÀY BẮT ĐẦU (Định dạng {0:yyyy-MM-ddTHH:mm} để hiện đúng giờ cũ) *@
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.StartDate, "Bắt đầu", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local" })
+                        @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 6. SỬA NGÀY KẾT THÚC *@
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.EndDate, "Kết thúc", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", @type = "datetime-local" })
+                        @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* 7. KÍCH HOẠT *@
+                <div class="form-group row">
+                    <label class="control-label col-md-2">Trạng thái</label>
+                    <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                            @Html.CheckBoxFor(model => model.IsActive, new { @class = "custom-control-input", @id = "isActiveCheck" })
+                            <label class="custom-control-label" for="isActiveCheck">Đang hoạt động</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="form-group row">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Lưu thay đổi
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

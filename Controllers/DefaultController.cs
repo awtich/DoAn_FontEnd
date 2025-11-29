@@ -97,6 +97,7 @@ namespace DoAn_web.Controllers
 
         public ActionResult TrangIphone()
         {
+            
            
             //  Lọc database:
             // CHỈ lấy các sản phẩm có CategoryName == "iPhone"
@@ -105,7 +106,12 @@ namespace DoAn_web.Controllers
                             .Where(p => p.Category.CategoryName == "iPhone")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
-
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(iphones);
         }
@@ -161,12 +167,18 @@ namespace DoAn_web.Controllers
 
         public ActionResult TrangMac()
         {
-            LoadFlashSalesToViewBag();
+            
             var Mac = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "Mac")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(Mac);
@@ -179,6 +191,12 @@ namespace DoAn_web.Controllers
                             .Where(p => p.Category.CategoryName == "Watch")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(Watch);
@@ -191,50 +209,54 @@ namespace DoAn_web.Controllers
                            .Where(p => p.Category.CategoryName == "ipad")
                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                            .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(Ipads);
         }
-        public ActionResult TrangMussic()
-        {
-            return View();
-        }
-        public ActionResult TrangCamera()
-        {
-            
-            var Camera = db.Products
-                            .Include(p => p.Category)
-                            .Where(p => p.Category.CategoryName == "Camera")
-                            .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
-                            .ToList();
-
-            //  Gửi danh sách ĐÃ LỌC này đến View
-            return View(Camera);
-        }
+        
+        
         public ActionResult TrangAccessory()
         {
             return View();
         }
         public ActionResult PhuKien()
         {
-            LoadFlashSalesToViewBag();
+            
             var PhuKien = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "PhuKien")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(PhuKien);
         }
         public ActionResult AmThanh()
         {
-            LoadFlashSalesToViewBag();
+            
             var AmThanh = db.Products
                             .Include(p => p.Category)
                             .Where(p => p.Category.CategoryName == "AmThanh")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(AmThanh);
@@ -247,6 +269,12 @@ namespace DoAn_web.Controllers
                             .Where(p => p.Category.CategoryName == "Camera")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(Camera);
@@ -259,6 +287,12 @@ namespace DoAn_web.Controllers
                             .Where(p => p.Category.CategoryName == "GiaDung")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(GiaDung);
@@ -271,30 +305,22 @@ namespace DoAn_web.Controllers
                             .Where(p => p.Category.CategoryName == "MayLuot")
                             .OrderByDescending(p => p.ProductID) // Lấy sp mới nhất
                             .ToList();
+            // tem flash sale
+            var activeFlashSales = db.FlashSaleItems
+                               .Where(x => x.IsActive == true
+                                        && x.StartDate <= DateTime.Now
+                                        && x.EndDate >= DateTime.Now).ToList();
+            ViewBag.FlashSales = activeFlashSales;
 
             //  Gửi danh sách ĐÃ LỌC này đến View
             return View(MayLuot);
         }
-        public ActionResult TinTuc()
-        {
-            return View();
-        }
+      
         public ActionResult DichVu()
         {
             return View();
         }
-        public ActionResult UserSighUp()
-        {
-            return View();
-        }
-        public ActionResult Address()
-        {
-            return View();
-        }
-        public ActionResult Confirm()
-        {
-            return View();
-        }
+        
         
     }
 }
